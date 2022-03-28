@@ -427,7 +427,7 @@
                 android:autofillHints="postalAddress"
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
-                android:hint="@string/address_line_1"
+                android:hint="@string/village"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -448,7 +448,7 @@
                 android:autofillHints="postalAddress"
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
-                android:hint="@string/address_line_2"
+                android:hint="@string/post_office"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -469,7 +469,7 @@
                 android:autofillHints="postalAddress"
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
-                android:hint="@string/address_line_3"
+                android:hint="@string/district"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />

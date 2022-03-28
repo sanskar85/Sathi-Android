@@ -30,7 +30,7 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/montserrat_semibold"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/dp"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -46,12 +46,13 @@ public class FirebaseMessageReceiver
         // Pass the intent to switch to the MainActivity
         Intent intent
                 = new Intent(this, Splash.class);
+        intent.putExtra("notice_notification", true);
 
         String channel_id = "default";
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent
-                = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
+                = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder
                 = new NotificationCompat

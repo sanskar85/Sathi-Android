@@ -62,9 +62,9 @@ public class Details extends Fragment {
         ((TextView) view.findViewById(R.id.occupation)).setText(String.format("Occupation : %s", user.getOccupation()));
         ((TextView) view.findViewById(R.id.about)).setText(String.format("About : %s", user.getAbout()));
         ((TextView) view.findViewById(R.id.maritalStatus)).setText(String.format("Marital Status : %s", user.getMaritalStatus()));
-        ((TextView) view.findViewById(R.id.address1)).setText(String.format("Address Line 1 : %s", user.getAddress1()));
-        ((TextView) view.findViewById(R.id.address2)).setText(String.format("Address Line 2 : %s", user.getAddress2()));
-        ((TextView) view.findViewById(R.id.address3)).setText(String.format("Address Line 3 : %s", user.getAddress3()));
+        ((TextView) view.findViewById(R.id.address1)).setText(String.format("Village : %s", user.getAddress1()));
+        ((TextView) view.findViewById(R.id.address2)).setText(String.format("Post Office : %s", user.getAddress2()));
+        ((TextView) view.findViewById(R.id.address3)).setText(String.format("District : %s", user.getAddress3()));
         ((TextView) view.findViewById(R.id.pincode)).setText(String.format("Pincode : %s", user.getPincode()));
 
         if (user.getChildCount() == 0) {

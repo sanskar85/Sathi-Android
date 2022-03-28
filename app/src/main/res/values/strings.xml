@@ -92,5 +92,8 @@
     <string name="comments">Comments</string>
     <string name="loading">loading</string>
     <string name="loading___">Loading...</string>
+    <string name="village">Village</string>
+    <string name="post_office">Post Office</string>
+    <string name="district">District</string>
 
 </resources>

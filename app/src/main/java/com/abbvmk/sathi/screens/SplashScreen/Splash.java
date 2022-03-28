@@ -32,6 +32,7 @@ public class Splash extends AppCompatActivity {
     static final int SPLASH_SCREEN_TIME = 1500;
     private String type;
     private String id;
+    private boolean notice;
 
 
     @Override
@@ -39,8 +40,11 @@ public class Splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_splash);
 
+        Intent intent = getIntent();
+        notice = intent.getBooleanExtra("notice_notification", false);
+
         FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(getIntent())
+                .getDynamicLink(intent)
                 .addOnSuccessListener(this, pendingDynamicLinkData -> {
                     // Get deep link from result (may be null if no link is found)
                     Uri deepLink = null;
@@ -64,21 +68,22 @@ public class Splash extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             final boolean loggedIn = AuthHelper.isLoggedIn();
             final User user = AuthHelper.getLoggedUser();
-            Intent intent;
+            Intent act;
             if (loggedIn && user != null) {
                 if (user.getName() == null || TextUtils.isEmpty(user.getName())) {
-                    intent = new Intent(this, EditProfile.class);
-                    startActivity(intent);
+                    act = new Intent(this, EditProfile.class);
+                    startActivity(act);
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
-                    intent = new Intent(this, LandingPage.class);
-                    intent.putExtra(type, id);
-                    startActivity(intent);
+                    act = new Intent(this, LandingPage.class);
+                    act.putExtra(type, id);
+                    act.putExtra("notice", true);
+                    startActivity(act);
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
             } else {
-                intent = new Intent(this, Login.class);
-                startActivity(intent);
+                act = new Intent(this, Login.class);
+                startActivity(act);
                 overridePendingTransition(0, 0);
             }
             finish();

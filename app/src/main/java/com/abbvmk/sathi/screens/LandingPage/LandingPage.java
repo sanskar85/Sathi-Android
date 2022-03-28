@@ -60,6 +60,9 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
             Intent startIntent = new Intent(this, PostViewer.class);
             startIntent.putExtra("postID", intent.getStringExtra("post"));
             startActivity(startIntent);
+        } else if (intent.getBooleanExtra("notice", false)) {
+            if (navigation != null)
+                navigation.setItemSelected(R.id.home, true);
         }
 
         fetchUpdates();

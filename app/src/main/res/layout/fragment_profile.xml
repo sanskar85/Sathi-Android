@@ -89,7 +89,7 @@
                         android:paddingVertical="10dp"
                         android:text="@string/edit_profile"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="14sp" />
                 </com.google.android.material.card.MaterialCardView>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
