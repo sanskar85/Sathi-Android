@@ -135,11 +135,12 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             });
 
         } else if (viewType == TYPE_IMAGE) {
+            System.out.println(notice.getMessage());
             User user = notice.getUser();
             GeneralViewHolder generalViewHolder = (GeneralViewHolder) holder;
-            generalViewHolder.message.setVisibility(View.GONE);
             generalViewHolder.name.setText(user.getName());
             generalViewHolder.designation.setText(user.getDesignation());
+            generalViewHolder.message.setText(notice.getMessage());
             generalViewHolder.time.setText(notice.getTime());
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {

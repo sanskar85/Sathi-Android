@@ -145,6 +145,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
+                android:inputType="textCapWords"
                 android:hint="@string/s_o"
                 android:maxLines="1"
                 android:singleLine="true"
@@ -166,6 +167,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/father_name"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -186,6 +188,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/mother_name"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -287,6 +290,7 @@
                 android:hint="@string/blood_group"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:textAllCaps="true"
                 android:textSize="18sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -428,6 +432,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/village"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -449,6 +454,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/post_office"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -470,6 +476,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/district"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -491,7 +498,7 @@
                 android:ellipsize="end"
                 android:fontFamily="@font/montserrat"
                 android:hint="@string/pincode"
-                android:inputType="number"
+                android:inputType="textCapWords"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textSize="18sp" />

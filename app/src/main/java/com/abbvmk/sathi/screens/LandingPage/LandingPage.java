@@ -41,6 +41,8 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
 
     ChipNavigationBar navigation;
     FrameLayout adminMenu;
+    private boolean noticeSelected;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +63,7 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
             startIntent.putExtra("postID", intent.getStringExtra("post"));
             startActivity(startIntent);
         } else if (intent.getBooleanExtra("notice", false)) {
-            if (navigation != null)
-                navigation.setItemSelected(R.id.home, true);
+            noticeSelected = true;
         }
 
         fetchUpdates();
@@ -122,7 +123,7 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
         } else if (i == R.id.members) {
             fragment = new Members();
         } else if (i == R.id.home) {
-            fragment = new Home();
+            fragment = new Home(noticeSelected);
         } else if (i == R.id.admin) {
             fragment = new Admin();
         }

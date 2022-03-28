@@ -21,9 +21,16 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 public class Home extends Fragment {
+    private final boolean noticeSelected;
 
     public Home() {
         // Required empty public constructor
+        noticeSelected = false;
+    }
+
+    public Home(boolean noticeSelected) {
+        // Required empty public constructor
+        this.noticeSelected = noticeSelected;
     }
 
     @Override
@@ -60,7 +67,11 @@ public class Home extends Fragment {
         HomeTabsAdapter adapter = new HomeTabsAdapter(this);
         viewPager.setAdapter(adapter);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
-        viewPager.setCurrentItem(2, false);
+        if (noticeSelected) {
+            viewPager.setCurrentItem(3, false);
+        } else {
+            viewPager.setCurrentItem(2, false);
+        }
         new TabLayoutMediator(tabLayout, viewPager,
                 (tab, position) -> {
                     String title = null;
@@ -78,5 +89,6 @@ public class Home extends Fragment {
                     tab.setText(title);
                 }
         ).attach();
+
     }
 }
