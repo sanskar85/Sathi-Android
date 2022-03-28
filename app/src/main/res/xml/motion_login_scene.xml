@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:autoTransition="animateToEnd"
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="500"></Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/logo"
+            android:layout_width="200dp"
+            android:layout_height="272dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            motion:layout_constraintBottom_toTopOf="@+id/input_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/logo" />
+        <Constraint
+            android:id="@+id/input_container"
+            android:layout_width="180dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="15dp"
+            android:alpha="0"
+            motion:layout_constraintBottom_toTopOf="@+id/submit_btn"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/desc" />
+        <Constraint
+            android:id="@+id/submit_btn"
+            android:layout_width="180dp"
+            android:layout_height="50dp"
+            android:alpha="0"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/input_container" />
+        <Constraint
+            android:id="@+id/input_wrapper"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintBottom_toTopOf="@+id/otp_input_box"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/desc" />
+
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/logo"
+            android:layout_width="177dp"
+            android:layout_height="150dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent">
+            <Motion motion:transitionEasing="linear" />
+            <Transform android:translationY="-200dp" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1"
+            motion:layout_constraintBottom_toTopOf="@+id/input_container"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/logo">
+
+            <Motion motion:transitionEasing="linear" />
+            <Transform android:translationY="-200dp" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/input_container"
+            android:layout_width="250dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="15dp"
+            android:alpha="1"
+            motion:layout_constraintBottom_toTopOf="@+id/submit_btn"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/desc">
+
+            <Motion motion:transitionEasing="linear" />
+            <Transform android:translationY="-200dp" />
+        </Constraint>
+        <Constraint
+            android:id="@+id/submit_btn"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:alpha="1"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/input_container">
+
+            <Motion motion:transitionEasing="linear" />
+            <Transform android:translationY="-200dp" />
+        </Constraint>
+
+
+    </ConstraintSet>
+</MotionScene>

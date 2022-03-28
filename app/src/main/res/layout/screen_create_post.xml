@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".screens.CreatePost.CreatePost">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="70dp"
+        android:contentDescription="@string/create_post"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_gallery" />
+
+    <TextView
+        android:id="@+id/selector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/montserrat_medium"
+        android:text="@string/tap_to_select_an_image"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image" />
+
+    <EditText
+        android:id="@+id/caption"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_et"
+        android:gravity="top|start"
+        android:hint="@string/write_your_caption_here"
+        android:lines="10"
+        android:minLines="5"
+        android:padding="5dp"
+        android:textCursorDrawable="@drawable/black_cursor"
+        app:layout_constraintTop_toBottomOf="@+id/selector" />
+
+
+    <com.abbvmk.sathi.Views.ProgressButton.ProgressButton
+        android:id="@+id/upload_btn"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundColor="@color/black"
+        app:cardRadius="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/caption"
+        app:progressColor="@color/white"
+        app:text="@string/upload"
+        app:textColor="@color/white" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:overScrollMode="never"
+    android:paddingBottom="20dp"
+    tools:context=".screens.EditProfile.EditProfile">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="@string/personal_details"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/dp"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="20dp"
+            app:shapeAppearanceOverlay="@style/RoundedFull"
+            app:srcCompat="@drawable/ic_camera" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/nameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="name"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/name"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/gender"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/genderET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="5dp"
+            android:checkedButton="@+id/s_o"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/male"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/male" />
+
+
+            <RadioButton
+                android:id="@+id/female"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/female" />
+
+
+        </RadioGroup>
+
+
+        <RadioGroup
+            android:id="@+id/relation_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="5dp"
+            android:checkedButton="@+id/s_o"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/s_o"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/s_o" />
+
+
+            <RadioButton
+                android:id="@+id/d_o"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/d_o" />
+
+            <RadioButton
+                android:id="@+id/w_o"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/w_o" />
+
+        </RadioGroup>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/relationNameLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/relationNameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/s_o"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/fatherNameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/father_name"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/motherNameET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/mother_name"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/d_o_b"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="5dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ddET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/dd"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/mmET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/mm"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/yyyyET"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/yyyy"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bloodGroupET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/blood_group"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/qualificationET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/qualification"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/occupationET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/occupation"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/aboutET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/about"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/marital_status"
+            android:textSize="18sp" />
+
+        <RadioGroup
+            android:id="@+id/marital_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="5dp"
+            android:checkedButton="@+id/married"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/married"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/married" />
+
+
+            <RadioButton
+                android:id="@+id/unmarried"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/unmarried" />
+
+            <RadioButton
+                android:id="@+id/widowed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/widowed" />
+
+            <RadioButton
+                android:id="@+id/separated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/separated" />
+
+        </RadioGroup>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/montserrat_medium"
+            android:text="@string/address"
+            android:textSize="20sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/address1ET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="postalAddress"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/address_line_1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/address2ET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="postalAddress"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/address_line_2"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/address3ET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="postalAddress"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/address_line_3"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pincodeET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints="postalCode"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/pincode"
+                android:inputType="number"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="18sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.abbvmk.sathi.Views.ProgressButton.ProgressButton
+            android:id="@+id/submit_btn"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundColor="@color/black"
+            app:cardRadius="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input_container"
+            app:progressColor="@color/white"
+            app:text="@string/_continue"
+            app:textColor="@color/white" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>

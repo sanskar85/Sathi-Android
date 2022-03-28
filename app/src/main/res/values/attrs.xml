@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="backgroundColor" format="color" />
+    <attr name="cardRadius" format="dimension" />
+
+    <declare-styleable name="ProgressButton">
+        <attr name="backgroundColor" />
+        <attr name="progressColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="text" format="string" />
+        <attr name="cardRadius" />
+    </declare-styleable>
+
+    <declare-styleable name="CircularImageView">
+        <attr name="backgroundColor" />
+        <attr name="cardRadius" />
+        <attr name="defaultImage" format="reference" />
+    </declare-styleable>
+</resources>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Fragments.Admin.Admin">
+
+
+    <include
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/create_new_designation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="10dp"
+                app:cardBackgroundColor="#fafafa"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:contentPaddingBottom="10dp"
+                app:contentPaddingLeft="5dp"
+                app:contentPaddingRight="20dp"
+                app:contentPaddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/icon"
+                        app:srcCompat="@drawable/ic_medal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="@string/create_new_designation"
+                        android:textColor="@color/purple_700"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/assign_designation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="10dp"
+                app:cardBackgroundColor="#fafafa"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:contentPaddingBottom="10dp"
+                app:contentPaddingLeft="5dp"
+                app:contentPaddingRight="20dp"
+                app:contentPaddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/icon"
+                        app:srcCompat="@drawable/ic_certificate" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="@string/appoint_designation"
+                        android:textColor="@color/success"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/create_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="10dp"
+                app:cardBackgroundColor="#fafafa"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:contentPaddingBottom="10dp"
+                app:contentPaddingLeft="5dp"
+                app:contentPaddingRight="20dp"
+                app:contentPaddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/icon"
+                        app:srcCompat="@drawable/ic_notice" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="@string/create_notice"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/create_meeting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="10dp"
+                app:cardBackgroundColor="#fafafa"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:contentPaddingBottom="10dp"
+                app:contentPaddingLeft="5dp"
+                app:contentPaddingRight="20dp"
+                app:contentPaddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/icon"
+                        app:srcCompat="@drawable/ic_meeting" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="@string/create_meeting"
+                        android:textColor="@color/teal_700"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/pending_designation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="10dp"
+                app:cardBackgroundColor="#fafafa"
+                app:cardCornerRadius="7dp"
+                app:cardElevation="2dp"
+                app:contentPaddingBottom="10dp"
+                app:contentPaddingLeft="5dp"
+                app:contentPaddingRight="20dp"
+                app:contentPaddingTop="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="50dp"
+                        android:contentDescription="@string/icon"
+                        app:srcCompat="@drawable/ic_certificate" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="@string/pending_tasks"
+                        android:textColor="@color/success"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </ScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

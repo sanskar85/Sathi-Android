@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:overScrollMode="never"
+    android:paddingBottom="20dp"
+    tools:context=".screens.EditProfile.ChildDetails">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="@string/child_details"
+            android:textColor="@color/black"
+            android:textSize="30sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginBottom="5dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/childCountET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="@font/montserrat"
+                android:hint="@string/number_of_child"
+                android:inputType="number"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:text="@string/_0"
+                android:textSize="18sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/childrenLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <com.abbvmk.sathi.Views.ProgressButton.ProgressButton
+            android:id="@+id/submit_btn"
+            android:layout_width="250dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundColor="@color/black"
+            app:cardRadius="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/input_container"
+            app:progressColor="@color/white"
+            app:text="@string/save"
+            app:textColor="@color/white" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</ScrollView>

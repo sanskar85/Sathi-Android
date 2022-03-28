@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#C7FAFF"
+    tools:context=".Fragments.Profile.Profile">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="370dp"
+        android:background="#C7FAFF"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="#76A1A5"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:tabContentStart="72dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="370dp"
+                app:layout_collapseMode="parallax">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/dp"
+                    android:layout_width="125dp"
+                    android:layout_height="125dp"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:shapeAppearanceOverlay="@style/RoundedFull"
+                    app:srcCompat="@drawable/ic_profile" />
+
+                <TextView
+                    android:id="@+id/nameTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:textColor="#000000"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/dp" />
+
+                <TextView
+                    android:id="@+id/relationTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/nameTV" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/edit_profile_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    app:cardBackgroundColor="@color/primary_color"
+                    app:cardCornerRadius="5dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/relationTV"
+                    app:strokeColor="@color/primary_color"
+                    android:visibility="gone"
+                    app:strokeWidth="1dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:paddingHorizontal="30dp"
+                        android:paddingVertical="10dp"
+                        android:text="@string/edit_profile"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+                </com.google.android.material.card.MaterialCardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="bottom"
+                android:background="@drawable/rounded_tab"
+                android:contentDescription="@string/tablayout"
+                android:minHeight="?attr/actionBarSize"
+                app:layout_collapseMode="none"
+                app:layout_scrollFlags="scroll|snap|enterAlways"
+                app:tabIndicatorColor="@color/accent_red"
+                app:tabSelectedTextColor="@color/accent_red"
+                app:tabTextAppearance="@style/tab_text"
+                app:tabTextColor="#000000" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:visibility="invisible"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|snap|enterAlways" />
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.abbvmk.sathi.Views.Loading.Loading
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
