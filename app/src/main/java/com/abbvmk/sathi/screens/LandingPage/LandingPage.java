@@ -49,9 +49,11 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_landing_page);
 
+        Intent intent = getIntent();
+        noticeSelected = intent.getBooleanExtra("notice", false);
+
         initViews();
 
-        Intent intent = getIntent();
         if (intent.hasExtra("user")) {
             Intent startIntent = new Intent(this, ProfileViewer.class);
             startIntent.putExtra("userID", intent.getStringExtra("user"));
@@ -62,8 +64,6 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
             Intent startIntent = new Intent(this, PostViewer.class);
             startIntent.putExtra("postID", intent.getStringExtra("post"));
             startActivity(startIntent);
-        } else if (intent.getBooleanExtra("notice", false)) {
-            noticeSelected = true;
         }
 
         fetchUpdates();

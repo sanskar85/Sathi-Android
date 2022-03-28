@@ -77,7 +77,7 @@ public class Splash extends AppCompatActivity {
                 } else {
                     act = new Intent(this, LandingPage.class);
                     act.putExtra(type, id);
-                    act.putExtra("notice", true);
+                    act.putExtra("notice", notice);
                     startActivity(act);
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
