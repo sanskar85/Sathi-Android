@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.abbvmk.sathi.BuildConfig;
 import com.abbvmk.sathi.Fragments.Posts.Post;
-import com.abbvmk.sathi.Notice.Notice;
+import com.abbvmk.sathi.Fragments.Notice.Notice;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

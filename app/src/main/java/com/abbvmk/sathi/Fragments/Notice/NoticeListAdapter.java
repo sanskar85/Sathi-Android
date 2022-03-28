@@ -1,4 +1,4 @@
-package com.abbvmk.sathi.Notice;
+package com.abbvmk.sathi.Fragments.Notice;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
@@ -25,6 +26,10 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -45,6 +50,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     static class FileViewHolder extends RecyclerView.ViewHolder {
         TextView title, name, designation, time;
         ShapeableImageView dp;
+        ImageView delete;
 
         public FileViewHolder(@NonNull View itemView, int type) {
             super(itemView);
@@ -54,6 +60,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             designation = itemView.findViewById(R.id.designation);
             time = itemView.findViewById(R.id.time);
             dp = itemView.findViewById(R.id.dp);
+            delete = itemView.findViewById(R.id.delete);
             if (type == TYPE_AUDIO) {
                 fileTypeImageView.setImageDrawable(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_audio));
             }
@@ -63,7 +70,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     static class GeneralViewHolder extends RecyclerView.ViewHolder {
         TextView message, name, designation, time;
         ShapeableImageView dp;
-        ImageView image;
+        ImageView image, delete;
 
         public GeneralViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,6 +80,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             designation = itemView.findViewById(R.id.designation);
             time = itemView.findViewById(R.id.time);
             dp = itemView.findViewById(R.id.dp);
+            delete = itemView.findViewById(R.id.delete);
         }
 
     }
@@ -134,6 +142,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             });
 
+            setupDeleteBTN(notice, fileViewHolder.delete, position);
         } else if (viewType == TYPE_IMAGE) {
             System.out.println(notice.getMessage());
             User user = notice.getUser();
@@ -161,6 +170,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 loadImage(noticeFile, generalViewHolder.image);
             }
 
+            setupDeleteBTN(notice, generalViewHolder.delete, position);
         } else if (viewType == TYPE_MESSAGE) {
             User user = notice.getUser();
             GeneralViewHolder generalViewHolder = (GeneralViewHolder) holder;
@@ -178,6 +188,36 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 });
             }
 
+            setupDeleteBTN(notice, generalViewHolder.delete, position);
+        }
+    }
+
+    private void setupDeleteBTN(Notice notice, ImageView delete, int position) {
+        if (notice.canBeDeleted()) {
+            delete.setVisibility(View.VISIBLE);
+            delete.setOnClickListener(v -> {
+                Toast.makeText(mContext, "Deleting ...", Toast.LENGTH_SHORT).show();
+                API
+                        .instance()
+                        .deleteNotice(notice.getId())
+                        .enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.code() == 200) {
+                                    Toast.makeText(mContext, "Notice deleted", Toast.LENGTH_SHORT).show();
+                                    notices.remove(notice);
+                                    notifyItemRemoved(position);
+                                } else {
+                                    Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            });
         }
     }
 

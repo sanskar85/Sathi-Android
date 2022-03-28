@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.abbvmk.sathi.Fragments.Posts.Post;
-import com.abbvmk.sathi.Notice.Notice;
+import com.abbvmk.sathi.Fragments.Notice.Notice;
 import com.abbvmk.sathi.User.User;
 import com.abbvmk.sathi.screens.Admin.Designation.PendingDesignationClass;
 import com.abbvmk.sathi.screens.Login.LoginResponse;
@@ -140,6 +140,9 @@ public class API {
 
         @GET("notice/all")
         Call<ArrayList<Notice>> fetchNotices();
+
+        @POST("notice/delete/{noticeID}")
+        Call<String> deleteNotice(@Path(value = "noticeID", encoded = true) String noticeID);
 
         @GET("designation/all")
         Call<ArrayList<String>> fetchDesignations();

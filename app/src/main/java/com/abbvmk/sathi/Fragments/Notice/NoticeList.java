@@ -1,4 +1,4 @@
-package com.abbvmk.sathi.Notice;
+package com.abbvmk.sathi.Fragments.Notice;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.abbvmk.sathi.Fragments.Members.MembersListAdapter;
 import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.Views.Loading.Loading;

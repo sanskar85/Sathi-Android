@@ -1,6 +1,7 @@
-package com.abbvmk.sathi.Notice;
+package com.abbvmk.sathi.Fragments.Notice;
 
 
+import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.User.ChildDetail;
 import com.abbvmk.sathi.User.User;
 import com.abbvmk.sathi.User.UserValidationException;
@@ -83,5 +84,17 @@ public class Notice implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean canBeDeleted() {
+
+        User me = AuthHelper.getLoggedUser();
+        if (me == null) return false;
+        else if (me.getDesignation().equals("अध्यक्ष")) return true;
+        else if (me.getDesignation().equals("सचिव")) return true;
+        else if (me.getDesignation().equals("उपाध्यक्ष")) return true;
+
+        return false;
+
     }
 }

@@ -1,13 +1,11 @@
 package com.abbvmk.sathi.Fragments.Home;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.abbvmk.sathi.Fragments.Posts.Posts;
-import com.abbvmk.sathi.Notice.NoticeList;
+import com.abbvmk.sathi.Fragments.Notice.NoticeList;
 
 public class HomeTabsAdapter extends FragmentStateAdapter {
 
