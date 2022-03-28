@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/heading" />
 
@@ -52,7 +52,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/name" />
 
@@ -65,7 +65,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/relationName" />
 
@@ -78,7 +78,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fname" />
 
@@ -91,7 +91,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mname" />
 
@@ -104,7 +104,7 @@
             android:text=""
             android:textAllCaps="true"
             android:textColor="@color/accent_red"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/gender" />
 
@@ -117,7 +117,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bloodGroup" />
 
@@ -130,7 +130,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/dob" />
 
@@ -143,7 +143,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/qualification" />
 
@@ -156,7 +156,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/occupation" />
 
@@ -169,7 +169,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/about" />
 
@@ -197,7 +197,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/heading2" />
 
@@ -210,7 +210,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/address1" />
 
@@ -223,7 +223,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/address2" />
 
@@ -237,7 +237,7 @@
             android:text=""
             android:textAllCaps="false"
             android:textColor="#CD000000"
-            android:textSize="18sp"
+            android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/address3" />
 
@@ -259,4 +259,4 @@
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
@@ -27,6 +28,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     private final Context mContext;
@@ -39,7 +44,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         void openComments(Post post);
     }
 
-    public PostAdapter(Context mContext, ArrayList<Post> posts, boolean committeePostsOnly, PostCardInterface postCardInterface) {
+    public PostAdapter(Context mContext, ArrayList<Post> posts, boolean committeePostsOnly, User user, PostCardInterface postCardInterface) {
         this.mContext = mContext;
         this.postCardInterface = postCardInterface;
         if (committeePostsOnly) {
@@ -50,14 +55,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             }
             this.posts = _posts;
+        } else if (user != null) {
+            ArrayList<Post> _posts = new ArrayList<>(posts);
+            for (Iterator<Post> it = _posts.iterator(); it.hasNext(); ) {
+                if (!it.next().getUser().getId().equals(user.getId())) {
+                    it.remove();
+                }
+            }
+            this.posts = _posts;
         } else {
             this.posts = posts;
         }
 
+
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder {
-        ImageView dp, image;
+        ImageView dp, image, delete;
         TextView name, designation, time, caption;
         MaterialCardView share, comment;
 
@@ -65,6 +79,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             super(itemView);
             dp = itemView.findViewById(R.id.dp);
             image = itemView.findViewById(R.id.image);
+            delete = itemView.findViewById(R.id.delete);
             name = itemView.findViewById(R.id.name);
             designation = itemView.findViewById(R.id.designation);
             time = itemView.findViewById(R.id.time);
@@ -120,6 +135,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 });
             }
         }
+
+        if (post.canBeDeleted()) {
+            holder.delete.setVisibility(View.VISIBLE);
+            holder.delete.setOnClickListener(v -> {
+                Toast.makeText(mContext, "Deleting ...", Toast.LENGTH_SHORT).show();
+                API
+                        .instance()
+                        .deletePost(post.getId())
+                        .enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                if (response.code() == 200) {
+                                    Toast.makeText(mContext, "Post deleted", Toast.LENGTH_SHORT).show();
+                                    posts.remove(post);
+                                    notifyItemRemoved(position);
+                                } else {
+                                    Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                                Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            });
+        }
+
 
         holder.share.setOnClickListener(v -> {
             FirebaseDynamicLinks.getInstance().createDynamicLink()

@@ -122,11 +122,14 @@ public class API {
         @POST("notice/create")
         Call<String> uploadNotice(@Field("message") String message, @Field("filename") String filename);
 
-        @GET("post/fetch/")
+        @GET("post/fetch")
         Call<ArrayList<Post>> fetchPosts();
 
         @GET("post/fetch/{postID}")
         Call<Post> fetchPost(@Path(value = "postID", encoded = true) String postID);
+
+        @POST("post/delete/{postID}")
+        Call<String> deletePost(@Path(value = "postID", encoded = true) String postID);
 
         @FormUrlEncoded
         @POST("post/comment/create")

@@ -27,7 +27,7 @@
         android:fontFamily="@font/montserrat_medium"
         android:text=""
         android:textColor="#CD000000"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title" />
 
@@ -39,7 +39,7 @@
         android:fontFamily="@font/montserrat_medium"
         android:text=""
         android:textColor="#CD000000"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/name" />
 
@@ -52,7 +52,7 @@
         android:fontFamily="@font/montserrat_medium"
         android:text=""
         android:textColor="#CD000000"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dob" />
 
@@ -64,7 +64,7 @@
         android:fontFamily="@font/montserrat_medium"
         android:text=""
         android:textColor="#CD000000"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/qualification" />
 
@@ -76,7 +76,7 @@
         android:fontFamily="@font/montserrat_medium"
         android:text=""
         android:textColor="#CD000000"
-        android:textSize="18sp"
+        android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/occupation" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.abbvmk.sathi.Fragments.Posts;
 
+import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.User.ChildDetail;
 import com.abbvmk.sathi.User.User;
 import com.google.gson.annotations.Expose;
@@ -64,5 +65,18 @@ public class Post implements Serializable {
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public boolean canBeDeleted() {
+
+        User me = AuthHelper.getLoggedUser();
+        if (me == null) return false;
+        else if (getUser().getId().equals(me.getId())) return true;
+        else if (me.getDesignation().equals("अध्यक्ष")) return true;
+        else if (me.getDesignation().equals("सचिव")) return true;
+        else if (me.getDesignation().equals("उपाध्यक्ष")) return true;
+
+        return false;
+
     }
 }

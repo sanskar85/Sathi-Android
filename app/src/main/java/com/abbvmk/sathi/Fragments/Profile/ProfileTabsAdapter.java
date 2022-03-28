@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import com.abbvmk.sathi.Fragments.Posts.Posts;
 import com.abbvmk.sathi.User.User;
 
 public class ProfileTabsAdapter extends FragmentStateAdapter {
@@ -28,14 +29,14 @@ public class ProfileTabsAdapter extends FragmentStateAdapter {
             fragment = new IDCard(mContext, user);
         } else if (position == 1) {
             fragment = new Details(user);
-        } else {
-
+        } else if (position == 2) {
+            fragment = new Posts(user);
         }
         return fragment;
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }

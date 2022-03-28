@@ -32,6 +32,7 @@ import retrofit2.Response;
 public class Posts extends Fragment implements PostAdapter.PostCardInterface {
 
     private final boolean committeePostsOnly;
+    private final User user;
     private Context mContext;
     private PostAdapter adapter;
     private static ArrayList<Post> posts;
@@ -41,10 +42,17 @@ public class Posts extends Fragment implements PostAdapter.PostCardInterface {
     public Posts() {
         // Required empty public constructor
         this.committeePostsOnly = false;
+        this.user = null;
     }
 
     public Posts(boolean committeePostsOnly) {
         this.committeePostsOnly = committeePostsOnly;
+        this.user = null;
+    }
+
+    public Posts(User user) {
+        this.user = user;
+        this.committeePostsOnly = false;
     }
 
 
@@ -72,7 +80,7 @@ public class Posts extends Fragment implements PostAdapter.PostCardInterface {
         }
 
         RecyclerView recyclerView = view.findViewById(R.id.postRecycler);
-        adapter = new PostAdapter(mContext, posts, committeePostsOnly, this);
+        adapter = new PostAdapter(mContext, posts, committeePostsOnly, user, this);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(adapter);
