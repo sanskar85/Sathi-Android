@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -66,21 +67,19 @@ public class Splash extends AppCompatActivity {
 
 
         new Handler().postDelayed(() -> {
-            final boolean loggedIn = AuthHelper.isLoggedIn();
+            final boolean loggedIn = FirebaseAuth.getInstance().getCurrentUser() != null;
             final User user = AuthHelper.getLoggedUser();
             Intent act;
-            if (loggedIn && user != null) {
-                if (user.getName() == null || TextUtils.isEmpty(user.getName())) {
+            if (loggedIn) {
+                if (user == null || TextUtils.isEmpty(user.getName())) {
                     act = new Intent(this, EditProfile.class);
-                    startActivity(act);
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 } else {
                     act = new Intent(this, LandingPage.class);
                     act.putExtra(type, id);
                     act.putExtra("notice", notice);
-                    startActivity(act);
-                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
+                startActivity(act);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             } else {
                 act = new Intent(this, Login.class);
                 startActivity(act);

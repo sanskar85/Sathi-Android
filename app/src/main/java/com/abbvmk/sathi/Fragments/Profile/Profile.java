@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
 import com.abbvmk.sathi.Views.Loading.Loading;
@@ -35,9 +36,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.File;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class Profile extends Fragment implements FilesHelper.FileResponse {
 
@@ -150,27 +148,20 @@ public class Profile extends Fragment implements FilesHelper.FileResponse {
 
     private void fetchProfile() {
         loading.setProgressVisible(true);
-        new Thread(() -> {
-            API
-                    .instance()
-                    .fetchProfile(userID)
-                    .enqueue(new Callback<User>() {
-                        @Override
-                        public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                            if (response.code() == 200) {
-                                user = response.body();
-                                resolveData();
-                            } else {
-                                Toast.makeText(getContext(), "Unable to fetch profile", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+        Firebase
+                .fetchProfile(userID, _user -> {
+                    if (_user == null) {
+                        Toast.makeText(getContext(), "Unable to fetch profile", Toast.LENGTH_SHORT).show();
+                        new Handler().postDelayed(() -> {
+                            if (getActivity() != null)
+                                getActivity().finish();
+                        }, 2000);
+                    } else {
+                        user = _user;
+                        resolveData();
+                    }
+                });
 
-                        @Override
-                        public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                            Toast.makeText(getContext(), "Unable to fetch profile", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }).start();
     }
 
 

@@ -7,19 +7,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.abbvmk.sathi.Helper.AuthHelper;
-import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.screens.SplashScreen.Splash;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.File;
 import java.util.Map;
 
 
@@ -30,16 +28,21 @@ public class FirebaseMessageReceiver
         super.onNewToken(token);
         Log.e("NOTIFICATION TOKEN", token);
         AuthHelper.saveNotificationToken(token);
+        FirebaseMessaging
+                .getInstance()
+                .subscribeToTopic("notice")
+                .addOnCompleteListener(task -> {
+        });
     }
 
     @Override
     public void
-    onMessageReceived(RemoteMessage remoteMessage) {
+    onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
         Map<String, String> payload = remoteMessage.getData();
         if (payload.size() > 0) {
             createNotification(payload.get("title"), payload.get("message"));
         }
-
     }
 
     public void createNotification(String title, String message) {

@@ -1,177 +1,147 @@
 package com.abbvmk.sathi.screens.Login;
 
-import static java.security.AccessController.getContext;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.abbvmk.sathi.Helper.API;
-import com.abbvmk.sathi.Helper.AuthHelper;
-import com.abbvmk.sathi.MainApplication;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.R;
-import com.abbvmk.sathi.Views.OTP_InputBox.OTP_InputBox;
 import com.abbvmk.sathi.Views.ProgressButton.ProgressButton;
 import com.abbvmk.sathi.screens.EditProfile.EditProfile;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.concurrent.TimeUnit;
 
 
 public class Login extends AppCompatActivity implements ProgressButton.OnClickListener {
 
 
-    enum Status {
-        OTP_NOT_SENT,
-        OTP_SENT,
-        VERIFIED
-    }
-
-    ;
+    private FirebaseAuth mAuth;
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     ProgressButton submit;
-    Status curr_status = Status.OTP_NOT_SENT;
     EditText phone;
     ConstraintLayout phoneCard;
-    OTP_InputBox otp;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_login);
+
+
         submit = findViewById(R.id.submit_btn);
         phoneCard = findViewById(R.id.input_wrapper);
         phone = findViewById(R.id.etPhone);
-        otp = findViewById(R.id.otp_input_box);
         submit.setOnClickListener(this);
+
+
+        mAuth = FirebaseAuth.getInstance();
+        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            @Override
+            public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
+                signInWithPhoneAuthCredential(credential);
+            }
+
+            @Override
+            public void onVerificationFailed(@NonNull FirebaseException e) {
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    Toast.makeText(Login.this, "Invalid Phone Number", Toast.LENGTH_SHORT).show();
+                } else if (e instanceof FirebaseTooManyRequestsException) {
+                    Toast.makeText(Login.this, "OTP quota for Sathi is reached. Please try again later.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(Login.this, "Cannot send OTP. Please try again later.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+        };
     }
 
     @Override
     public void onClick() {
         if (!submit.isViewEnabled()) return;
-        if (curr_status == Status.OTP_NOT_SENT) {
-            if (phone.getText().length() != 10) {
-                Toast.makeText(this, "Phone number must be of 10 digit", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            submit.setViewEnabled(false);
-            submit.buttonActivated();
-            new Thread(() -> {
-
-                Map<String, String> fields = new HashMap<>();
-                fields.put("phone", String.valueOf(phone.getText()));
-                Call<String> call = API.instance().loginRequest(fields);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        submit.setViewEnabled(true);
-                        if (response.code() == 200) {
-                            updateStatus(Status.OTP_SENT);
-                        } else {
-
-                            Toast.makeText(getApplicationContext(), "Unable to send OTP. Please try again later.", Toast.LENGTH_SHORT).show();
-                            submit.buttonFinished("Continue");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                        submit.setViewEnabled(true);
-                        Toast.makeText(getApplicationContext(), "Unable to send OTP. Please try again later.", Toast.LENGTH_SHORT).show();
-                        submit.buttonFinished("Continue");
-                    }
-                });
-            }).start();
-        } else if (curr_status == Status.OTP_SENT) {
-            String otpText = otp.getOTP();
-            if (otpText.length() != otp.size()) {
-                Toast.makeText(this, "OTP must be of " + otp.size() + " digit", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            submit.setViewEnabled(false);
-            submit.buttonActivated();
-            new Thread(() -> {
-                Map<String, String> fields = new HashMap<>();
-                fields.put("phone", String.valueOf(phone.getText()));
-                fields.put("otp", otpText);
-                fields.put("notification_token", AuthHelper.getNotificationToken());
-                Call<LoginResponse> call = API.instance().loginVerify(fields);
-                call.enqueue(new Callback<LoginResponse>() {
-                    @Override
-                    public void onResponse(@NonNull Call<LoginResponse> call, @NonNull Response<LoginResponse> response) {
-                        submit.setViewEnabled(true);
-                        if (response.code() == 200 && response.body() != null) {
-                            AuthHelper.saveAuthenticationToken(response.body().getAuthToken());
-                            AuthHelper.saveUser(response.body().getUser());
-                            updateStatus(Status.VERIFIED);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "OTP verification Failed", Toast.LENGTH_SHORT).show();
-                            submit.buttonFinished("Continue");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<LoginResponse> call, @NonNull Throwable t) {
-                        submit.setViewEnabled(true);
-                        Toast.makeText(getApplicationContext(), "OTP verification Failed", Toast.LENGTH_SHORT).show();
-                        System.out.println(t.getMessage());
-                        submit.buttonFinished("Continue");
-                    }
-                });
-            }).start();
-
+        if (phone.getText().length() != 10) {
+            Toast.makeText(this, "Phone number must be of 10 digit", Toast.LENGTH_SHORT).show();
+            return;
         }
+        phone.setEnabled(false);
+        submit.setViewEnabled(false);
+        submit.buttonActivated();
+        String phoneNumber = "+91" + phone.getText();
+        PhoneAuthOptions options =
+                PhoneAuthOptions.newBuilder(mAuth)
+                        .setPhoneNumber(phoneNumber)       // Phone number to verify
+                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                        .setActivity(this)                 // Activity (for callback binding)
+                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                        .build();
+        PhoneAuthProvider.verifyPhoneNumber(options);
     }
 
-    private void updateStatus(Status status) {
-        curr_status = status;
-        if (status == Status.OTP_NOT_SENT) {
-            phoneCard.setVisibility(View.VISIBLE);
-            otp.setVisibility(View.GONE);
-            submit.buttonFinished("Continue");
-            submit.setCardBackgroundColor(ContextCompat.getColor(this, R.color.progress_bar_background));
-        } else if (status == Status.OTP_SENT) {
-            phoneCard.setVisibility(View.GONE);
-            otp.setVisibility(View.VISIBLE);
-            submit.setCardBackgroundColor(ContextCompat.getColor(this, R.color.success));
-            submit.buttonFinished("OTP Sent");
-            new Handler().postDelayed(() -> {
-                submit.setCardBackgroundColor(ContextCompat.getColor(this, R.color.progress_bar_background));
-                submit.buttonFinished("Verify");
-            }, 5000);
-        } else if (status == Status.VERIFIED) {
-            phoneCard.setVisibility(View.GONE);
-            otp.setVisibility(View.VISIBLE);
+    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = task.getResult().getUser();
+                            updateUI(user);
+                        } else {
+                            Toast.makeText(Login.this, "Unable to verify phone.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            phoneCard.setEnabled(false);
             submit.setCardBackgroundColor(ContextCompat.getColor(this, R.color.success));
             submit.buttonFinished("Verified");
-            new Handler().postDelayed(() -> {
-                startActivity(new Intent(this, EditProfile.class));
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                finish();
-            }, 1000);
+            Firebase.fetchMyProfile(success -> {
+                new Handler().postDelayed(() -> {
+                    startActivity(new Intent(this, EditProfile.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    finish();
+                }, 500);
+            });
+
         }
     }
+
+
+    private boolean isBackPressed = false;
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (curr_status == Status.OTP_SENT) {
-            updateStatus(Status.OTP_NOT_SENT);
-        } else {
+        if (isBackPressed) {
             super.onBackPressed();
+        } else {
+            isBackPressed = true;
+            new Handler().postDelayed(() -> {
+                Toast.makeText(this, "Press back again to exit Sathi", Toast.LENGTH_SHORT).show();
+            }, 1000);
         }
     }
 }

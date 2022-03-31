@@ -1,27 +1,13 @@
 package com.abbvmk.sathi.screens.Admin.Designation;
 
-import com.abbvmk.sathi.User.User;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 public class PendingDesignationClass implements Serializable {
 
-    @SerializedName("_id")
-    @Expose
     private String id;
-
-    @SerializedName("requestedBy")
-    @Expose
-    private User requestedBy;
-
-    @SerializedName("requestedFor")
-    @Expose
-    private User requestedFor;
-
-    @SerializedName("designation")
-    @Expose
+    private String requestedBy;
+    private String requestedFor;
     private String designation;
 
     public String getId() {
@@ -32,19 +18,19 @@ public class PendingDesignationClass implements Serializable {
         this.id = id;
     }
 
-    public User getRequestedBy() {
+    public String getRequestedBy() {
         return requestedBy;
     }
 
-    public void setRequestedBy(User requestedBy) {
+    public void setRequestedBy(String requestedBy) {
         this.requestedBy = requestedBy;
     }
 
-    public User getRequestedFor() {
+    public String getRequestedFor() {
         return requestedFor;
     }
 
-    public void setRequestedFor(User requestedFor) {
+    public void setRequestedFor(String requestedFor) {
         this.requestedFor = requestedFor;
     }
 

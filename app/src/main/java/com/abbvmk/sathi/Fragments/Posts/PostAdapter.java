@@ -14,29 +14,28 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
+import com.abbvmk.sathi.Helper.GlideHelper;
+import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     private final Context mContext;
     private final ArrayList<Post> posts;
     private final PostCardInterface postCardInterface;
+    private final PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
 
     public interface PostCardInterface {
         void profileHeaderClicker(User user);
@@ -50,7 +49,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if (committeePostsOnly) {
             ArrayList<Post> _posts = new ArrayList<>(posts);
             for (Iterator<Post> it = _posts.iterator(); it.hasNext(); ) {
-                if (!it.next().getUser().isAdmin()) {
+                User _user = MainApplication.findUser(it.next().getUser());
+                if (_user == null || !_user.isAdmin()) {
                     it.remove();
                 }
             }
@@ -58,7 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else if (user != null) {
             ArrayList<Post> _posts = new ArrayList<>(posts);
             for (Iterator<Post> it = _posts.iterator(); it.hasNext(); ) {
-                if (!it.next().getUser().getId().equals(user.getId())) {
+                if (!it.next().getUser().equals(user.getId())) {
                     it.remove();
                 }
             }
@@ -98,11 +98,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = posts.get(position);
-        User user = post.getUser();
-
+        User user = MainApplication.findUser(post.getUser());
+        if (user == null) {
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        }
         holder.name.setText(user.getName());
         holder.designation.setText(user.getDesignation());
-        holder.time.setText(post.getTime());
+        holder.time.setText(prettyTime.format(post.getTime()));
         holder.caption.setText(post.getCaption());
 
         holder.dp.setOnClickListener(v -> {
@@ -118,45 +121,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         File dp = FilesHelper.dp(mContext, user.getId());
         if (dp != null) {
-            loadImage(dp, holder.dp);
+            GlideHelper.loadDPImage(holder.itemView.getContext(), dp, holder.dp);
         } else {
             FilesHelper.downloadDP(mContext, user.getId(), (file) -> {
-                loadImage(file, holder.dp);
+                GlideHelper.loadDPImage(holder.itemView.getContext(), dp, holder.dp);
             });
         }
-        if (post.getFilename() != null) {
-
-            File postImage = FilesHelper.post(mContext, post);
-            if (postImage != null) {
-                loadImage(postImage, holder.image);
-            } else {
-                FilesHelper.downloadPost(mContext, post, (file) -> {
-                    loadImage(file, holder.image);
-                });
-            }
+        if (post.getPhoto() != null) {
+            GlideHelper.loadPostImage(holder.itemView.getContext(), post.getPhoto(), holder.image);
         }
 
         if (post.canBeDeleted()) {
             holder.delete.setVisibility(View.VISIBLE);
+            holder.delete.setTag(position);
             holder.delete.setOnClickListener(v -> {
                 Toast.makeText(mContext, "Deleting ...", Toast.LENGTH_SHORT).show();
-                API
-                        .instance()
-                        .deletePost(post.getId())
-                        .enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                if (response.code() == 200) {
-                                    Toast.makeText(mContext, "Post deleted", Toast.LENGTH_SHORT).show();
-                                    posts.remove(post);
-                                    notifyItemRemoved(position);
-                                } else {
-                                    Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Firebase
+                        .deletePost(post.getId(), success -> {
+                            if (success) {
+                                Toast.makeText(mContext, "Post deleted", Toast.LENGTH_SHORT).show();
+                                posts.remove(post);
+                                notifyItemRemoved((Integer) v.getTag());
+                            } else {
                                 Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -180,10 +166,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             intent.setType("text/plain");
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                            File shareFile = FilesHelper.post(mContext, post);
-                            if (shareFile != null) {
+                            if (post.getPhoto() != null) {
+                                File shareFile = FilesHelper.drawableToFile(mContext, holder.image.getDrawable());
                                 Uri uri = FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", shareFile);
-
                                 intent.putExtra(Intent.EXTRA_STREAM, uri);
                                 intent.setType("image/jpg");
                             }
@@ -206,18 +191,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 postCardInterface.openComments(post);
             }
         });
-    }
-
-
-    private void loadImage(File file, ImageView iv) {
-        if (file != null) {
-            Glide
-                    .with(mContext.getApplicationContext())
-                    .load(file)
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                    .into(iv);
-        }
     }
 
 

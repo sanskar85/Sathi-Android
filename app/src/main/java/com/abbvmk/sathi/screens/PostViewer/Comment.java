@@ -1,35 +1,23 @@
 package com.abbvmk.sathi.screens.PostViewer;
 
-import com.abbvmk.sathi.User.User;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Comment implements Serializable {
-    @SerializedName("_id")
-    @Expose
-    private String id;
-    @SerializedName("user")
-    @Expose
-    private User user;
-    @SerializedName("message")
-    @Expose
+    private String user;
     private String message;
 
-    public String getId() {
-        return id;
-    }
+    @ServerTimestamp
+    private Date time;
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
@@ -39,5 +27,13 @@ public class Comment implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 }

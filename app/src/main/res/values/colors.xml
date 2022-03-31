@@ -17,4 +17,5 @@
     <color name="failure">#FF4949</color>
     <color name="accent_red">#E32F45</color>
     <color name="light_sky_blue">#C7FAFF</color>
+    <color name="accent_blue">#0097ff</color>
 </resources>

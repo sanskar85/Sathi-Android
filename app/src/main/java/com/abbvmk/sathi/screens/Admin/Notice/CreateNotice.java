@@ -16,8 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-import com.abbvmk.sathi.Helper.API;
+import com.abbvmk.sathi.Fragments.Notice.Notice;
+import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
+import com.abbvmk.sathi.Helper.NotificationSender;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.Views.ProgressButton.ProgressButton;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,7 +29,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -84,59 +90,77 @@ public class CreateNotice extends AppCompatActivity implements ProgressButton.On
         if (uploadFile != null) {
             new Thread(() -> {
                 Uri uploadPath = Uri.fromFile(uploadFile);
-                String path = Calendar.getInstance().getTimeInMillis() + "."+FilesHelper.getExtension(uploadFile);
-                StorageReference ref = mStorage.getReference("temp_files").child(path);
+                String path = Calendar.getInstance().getTimeInMillis() + "." + FilesHelper.getExtension(uploadFile);
+                StorageReference ref = mStorage.getReference("notices").child(path);
 
                 UploadTask uploadTask = ref.putFile(uploadPath);
 
                 uploadTask
-                        .addOnFailureListener(exception -> Toast.makeText(getApplicationContext(), "Unable to upload your photo.", Toast.LENGTH_SHORT).show())
-                        .addOnSuccessListener(taskSnapshot -> uploadPost(text,path));
-            }).start();
-        } else {
-            uploadPost(text,"");
-        }
-    }
-
-    private void uploadPost(String text, String path) {
-        new Thread(() -> {
-            API
-                    .instance()
-                    .uploadNotice(text,path)
-                    .enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            if (response.code() == 200 && response.body() != null) {
-
-                                save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
-                                save.buttonFinished("Published");
-                                new Handler().postDelayed(() -> finish(), 2000);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
-                                save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                                save.buttonFinished("Failure");
-                                new Handler().postDelayed(() -> {
-                                    save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                                    save.buttonFinished("Publish");
-                                    save.setViewEnabled(true);
-                                }, 3000);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                            System.out.println(t.getMessage());
-                            Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                        .addOnFailureListener(exception -> {
+                            Toast.makeText(getApplicationContext(), "Unable to upload your photo.", Toast.LENGTH_SHORT).show();
                             save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                            save.buttonFinished("Failure");
+                            save.buttonFinished("Failed");
                             new Handler().postDelayed(() -> {
                                 save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
                                 save.buttonFinished("Publish");
                                 save.setViewEnabled(true);
-                            }, 3000);
+                            }, 2000);
+                        })
+                        .addOnSuccessListener(taskSnapshot -> uploadPost(text, path));
+            }).start();
+        } else {
+            uploadPost(text, "");
+        }
+    }
+
+    private void uploadPost(String text, String path) {
+        Notice notice = new Notice();
+        notice.setFile(path);
+        notice.setMessage(text);
+
+        Firebase
+                .createNotice(notice, success -> {
+                    if (success) {
+                        if (AuthHelper.getLoggedUser() != null) {
+                            String title = AuthHelper.getLoggedUser().getName() + " ने एक नोटिस प्रकाशित किया है|";
+                            String message = AuthHelper.getLoggedUser().getName() + " ने एक नोटिस प्रकाशित किया है| देखने के लिए यहां क्लिक करें \uD83D\uDC48";
+                            Map<String, Object> notification = new HashMap<>();
+                            Map<String, Object> notificationBody = new HashMap<>();
+
+                            notificationBody.put("title", title);
+                            notificationBody.put("message", message);
+                            notification.put("to", "/topics/notice");
+                            notification.put("data", notificationBody);
+                            NotificationSender
+                                    .getClient()
+                                    .sendNotification(notification)
+                                    .enqueue(new Callback<ResponseBody>() {
+                                        @Override
+                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                                            System.out.println(response.code());
+                                        }
+
+                                        @Override
+                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                                            System.out.println(t.getMessage());
+                                        }
+                                    });
                         }
-                    });
-        }).start();
+                        save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
+                        save.buttonFinished("Published");
+                        new Handler().postDelayed(this::finish, 2000);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                        save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
+                        save.buttonFinished("Failed");
+                        new Handler().postDelayed(() -> {
+                            save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                            save.buttonFinished("Publish");
+                            save.setViewEnabled(true);
+                        }, 3000);
+                    }
+                });
+
     }
 
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(

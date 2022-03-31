@@ -1,10 +1,5 @@
 package com.abbvmk.sathi.screens.EditProfile;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,9 +9,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.abbvmk.sathi.Helper.API;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
@@ -35,13 +34,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
 import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class EditProfile extends AppCompatActivity implements ProgressButton.OnClickListener, FilesHelper.FileResponse {
 
@@ -59,10 +52,14 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_edit_profile);
+
         Intent intent = getIntent();
         fromHome = intent.getBooleanExtra("fromHome", false);
-        user = AuthHelper.getLoggedUser();
 
+        user = AuthHelper.getLoggedUser();
+        if (user == null) {
+            user = new User();
+        }
         mStorage = FirebaseStorage.getInstance();
 
         initView();
@@ -168,11 +165,12 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
                 yyyy.setText(String.valueOf(date[2]));
             }
         }
-        File file = FilesHelper.dp(this, user.getId());
+
+        File file = FilesHelper.dp(this, AuthHelper.getUID());
         if (file != null) {
             loadImage(file);
         } else {
-            FilesHelper.downloadDP(this, user.getId(), this);
+            FilesHelper.downloadDP(this, AuthHelper.getUID(), this);
         }
     }
 
@@ -238,75 +236,30 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
         submit.setViewEnabled(false);
         submit.buttonActivated();
         if (dpPath != null) {
+            String path = AuthHelper.getUID() + ".jpg";
+            StorageReference ref = mStorage.getReference("dp").child(path);
 
-            new Thread(() -> {
+            UploadTask uploadTask = ref.putFile(dpPath);
 
-                String path = Calendar.getInstance().getTimeInMillis() + ".jpg";
-                StorageReference ref = mStorage.getReference("temp_files").child(path);
-
-                UploadTask uploadTask = ref.putFile(dpPath);
-
-                uploadTask
-                        .addOnFailureListener(exception -> Toast.makeText(getApplicationContext(), "Unable to upload your photo.", Toast.LENGTH_SHORT).show())
-                        .addOnSuccessListener(taskSnapshot -> {
-                            File source = new File(dpPath.getPath());
-                            File dest = new File(getExternalFilesDir("dp"), user.getId() + ".jpg");
-                            try {
-                                FilesHelper.copy(source, dest);
-                                user.setUploadPath(path);
-                                saveProfile();
-                            } catch (IOException e) {
-                                Toast.makeText(getApplicationContext(), "Unable to save your photo.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }).start();
-        } else {
-            saveProfile();
-        }
-    }
-
-    public void saveProfile() {
-        new Thread(() -> {
-            API.instance().saveProfile(user).enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    if (response.code() == 200 && response.body() != null) {
-                        AuthHelper.saveUser(response.body());
-                        MainApplication.fetchUsers();
-                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
-                        submit.buttonFinished("Saved");
-                        new Handler().postDelayed(() -> {
-                            if (user.getMaritalStatus().equalsIgnoreCase("Married")) {
-                                Intent intent = new Intent(getApplicationContext(), ChildDetails.class);
-                                intent.putExtra("fromHome", fromHome);
-                                startActivity(intent);
-                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                            } else {
-                                if (!fromHome) {
-                                    startActivity(new Intent(getApplicationContext(), LandingPage.class));
-                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                                }
-                            }
-                            finish();
-                        }, 2000);
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    if (task.getException() != null) {
+                        throw task.getException();
                     } else {
-                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
-                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                        submit.buttonFinished("Failure");
-                        new Handler().postDelayed(() -> {
-                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                            submit.buttonFinished("Save");
-                            submit.setViewEnabled(true);
-                        }, 3000);
+                        throw new Exception("File upload failed");
                     }
                 }
-
-                @Override
-                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    System.out.println(t.getMessage());
-                    Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                return ref.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    user.setPhoto(downloadUri.toString());
+                    saveProfile();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Unable to save your photo.", Toast.LENGTH_SHORT).show();
                     submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
                     submit.buttonFinished("Failure");
+
                     new Handler().postDelayed(() -> {
                         submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
                         submit.buttonFinished("Save");
@@ -315,7 +268,46 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
                 }
             });
 
-        }).start();
+        } else {
+            saveProfile();
+        }
+    }
+
+    public void saveProfile() {
+        Firebase
+                .saveProfile(user, success -> {
+                    if (success) {
+                        MainApplication.fetchUsers();
+                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
+                        submit.buttonFinished("Saved");
+                        new Handler().postDelayed(() -> {
+
+                            if (user.getMaritalStatus().equalsIgnoreCase("Married")) {
+                                Intent intent = new Intent(getApplicationContext(), ChildDetails.class);
+                                intent.putExtra("fromHome", fromHome);
+                                startActivity(intent);
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            } else if (!fromHome) {
+                                startActivity(new Intent(getApplicationContext(), LandingPage.class));
+                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                            }
+
+                            finish();
+
+                        }, 2000);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
+                        submit.buttonFinished("Failure");
+
+                        new Handler().postDelayed(() -> {
+                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                            submit.buttonFinished("Save");
+                            submit.setViewEnabled(true);
+                        }, 3000);
+                    }
+                });
+
     }
 
     @Override

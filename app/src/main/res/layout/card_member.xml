@@ -21,7 +21,8 @@
             android:layout_height="50dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/RoundedFull" />
+            app:shapeAppearanceOverlay="@style/RoundedFull"
+            app:srcCompat="@drawable/ic_profile" />
 
         <TextView
             android:id="@+id/name"

@@ -4,85 +4,31 @@ package com.abbvmk.sathi.User;
 import java.io.Serializable;
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 public class User implements Serializable {
 
-    @SerializedName("_id")
-    @Expose
     private String id;
-    @SerializedName("uploadPath")
-    @Expose
-    private String uploadPath;
-    @SerializedName("phone")
-    @Expose
-    private String phone;
-    @SerializedName("designation")
-    @Expose
     private String designation;
-    @SerializedName("childDetails")
-    @Expose
     private List<ChildDetail> childDetails = null;
-    @SerializedName("member_id")
-    @Expose
     private Integer memberId;
-    @SerializedName("__v")
-    @Expose
     private Integer v;
-    @SerializedName("about")
-    @Expose
     private String about;
-    @SerializedName("address1")
-    @Expose
     private String address1;
-    @SerializedName("address2")
-    @Expose
     private String address2;
-    @SerializedName("address3")
-    @Expose
     private String address3;
-    @SerializedName("dob")
-    @Expose
     private String dob;
-    @SerializedName("gender")
-    @Expose
     private String gender;
-    @SerializedName("marital_status")
-    @Expose
     private String maritalStatus;
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("occupation")
-    @Expose
     private String occupation;
-    @SerializedName("photo")
-    @Expose
     private String photo;
-    @SerializedName("pincode")
-    @Expose
     private Integer pincode;
-    @SerializedName("qualification")
-    @Expose
     private String qualification;
-    @SerializedName("relationName")
-    @Expose
     private String relationName;
-    @SerializedName("relationType")
-    @Expose
     private String relationType;
-    @SerializedName("fname")
-    @Expose
     private String fname;
-    @SerializedName("mname")
-    @Expose
     private String mname;
-    @SerializedName("bloodGroup")
-    @Expose
     private String bloodGroup;
-    @SerializedName("childCount")
-    @Expose
     private Integer childCount;
 
     public String getId() {
@@ -93,13 +39,6 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 
     public String getDesignation() {
         return designation;
@@ -118,7 +57,7 @@ public class User implements Serializable {
     }
 
     public Integer getMemberId() {
-        return memberId;
+        return memberId != null ? memberId : 0;
     }
 
     public void setMemberId(Integer memberId) {
@@ -277,13 +216,6 @@ public class User implements Serializable {
         this.bloodGroup = bloodGroup;
     }
 
-    public String getUploadPath() {
-        return uploadPath;
-    }
-
-    public void setUploadPath(String uploadPath) {
-        this.uploadPath = uploadPath;
-    }
 
     public void validate() throws UserValidationException {
         if (name == null || name.length() == 0) {
@@ -306,6 +238,8 @@ public class User implements Serializable {
             throw new UserValidationException("Qualification cannot be empty");
         } else if (occupation == null || occupation.length() == 0) {
             throw new UserValidationException("Occupation cannot be empty");
+        } else if (designation == null || designation.length() == 0) {
+            setDesignation("सदस्य");
         }
     }
 

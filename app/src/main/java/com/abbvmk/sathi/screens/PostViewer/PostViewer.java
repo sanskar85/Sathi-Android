@@ -1,11 +1,5 @@
 package com.abbvmk.sathi.screens.PostViewer;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -21,26 +14,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.abbvmk.sathi.Fragments.Posts.Post;
-import com.abbvmk.sathi.Fragments.Profile.Profile;
-import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
+import com.abbvmk.sathi.Helper.GlideHelper;
+import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
 import com.abbvmk.sathi.Views.Loading.Loading;
 import com.abbvmk.sathi.screens.ProfileViewer.ProfileViewer;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.Locale;
 
 public class PostViewer extends AppCompatActivity {
 
@@ -74,34 +68,26 @@ public class PostViewer extends AppCompatActivity {
     private void fetchPost(String postID) {
 
         loading.setProgressVisible(true);
-        new Thread(() -> {
-            API
-                    .instance()
-                    .fetchPost(postID)
-                    .enqueue(new Callback<Post>() {
-                        @Override
-                        public void onResponse(@NonNull Call<Post> call, @NonNull Response<Post> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                mPost = response.body();
-                                resolveData();
-                            } else {
-                                Toast.makeText(mContext, "Unable to load this post", Toast.LENGTH_SHORT).show();
-                                finish();
-                            }
-                        }
+        Firebase
+                .fetchPost(postID, post -> {
+                    if (post != null) {
+                        mPost = post;
+                        resolveData();
+                    } else {
+                        Toast.makeText(mContext, "Unable to load this post", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
 
-                        @Override
-                        public void onFailure(@NonNull Call<Post> call, @NonNull Throwable t) {
-                            Toast.makeText(mContext, "Unable to load this post", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    });
-        }).start();
     }
 
     private void resolveData() {
         loading.setProgressVisible(false);
-        User user = mPost.getUser();
+        User user = MainApplication.findUser(mPost.getUser());
+        if (user == null) {
+            finish();
+            return;
+        }
 
         ImageView dp, image;
         TextView name, designation, time, caption;
@@ -116,7 +102,8 @@ public class PostViewer extends AppCompatActivity {
 
         name.setText(user.getName());
         designation.setText(user.getDesignation());
-        time.setText(mPost.getTime());
+        PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
+        time.setText(prettyTime.format(mPost.getTime()));
         caption.setText(mPost.getCaption());
 
         dp.setOnClickListener(v -> {
@@ -134,18 +121,14 @@ public class PostViewer extends AppCompatActivity {
 
         File dpFile = FilesHelper.dp(mContext, user.getId());
         if (dpFile != null) {
-            loadImage(dpFile, dp);
+            GlideHelper.loadDPImage(mContext, dpFile, dp);
         } else {
-            FilesHelper.downloadDP(mContext, user.getId(), (file) -> loadImage(file, dp));
+            FilesHelper.downloadDP(mContext, user.getId(), (file) -> {
+                GlideHelper.loadDPImage(mContext, file, dp);
+            });
         }
-        if (mPost.getFilename() != null) {
-
-            File postImage = FilesHelper.post(mContext, mPost);
-            if (postImage != null) {
-                loadImage(postImage, image);
-            } else {
-                FilesHelper.downloadPost(mContext, mPost, (file) -> loadImage(file, image));
-            }
+        if (mPost.getPhoto() != null) {
+            GlideHelper.loadPostImage(mContext, mPost.getPhoto(), image);
         }
 
         findViewById(R.id.share).setOnClickListener(v -> {
@@ -164,10 +147,9 @@ public class PostViewer extends AppCompatActivity {
                             intent.setType("text/plain");
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                            File shareFile = FilesHelper.post(mContext, mPost);
-                            if (shareFile != null) {
+                            if (mPost.getPhoto() != null) {
+                                File shareFile = FilesHelper.drawableToFile(mContext, image.getDrawable());
                                 Uri uri = FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", shareFile);
-
                                 intent.putExtra(Intent.EXTRA_STREAM, uri);
                                 intent.setType("image/jpg");
                             }
@@ -189,7 +171,7 @@ public class PostViewer extends AppCompatActivity {
         RecyclerView commentRecycler = findViewById(R.id.commentRecycler);
         comments = new ArrayList<>();
         commentsAdapter = new CommentsAdapter(comments);
-        commentRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        commentRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         commentRecycler.setHasFixedSize(false);
         commentRecycler.setAdapter(commentsAdapter);
 
@@ -237,64 +219,31 @@ public class PostViewer extends AppCompatActivity {
     }
 
     private void sendComment(String comment) {
-        new Thread(() -> {
-            API
-                    .instance()
-                    .createComment(mPost.getId(), comment)
-                    .enqueue(new Callback<Comment>() {
-                        @Override
-                        public void onResponse(Call<Comment> call, Response<Comment> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                comments.add(response.body());
-                                commentsAdapter.notifyItemInserted(comments.size() - 1);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<Comment> call, @NonNull Throwable t) {
-                        }
-                    });
-
-        }).start();
+        Comment commentClass = new Comment();
+        commentClass.setMessage(comment);
+        Firebase
+                .createComment(mPost.getId(), commentClass, success -> {
+                    if (success) {
+                        comments.add(0, commentClass);
+                        commentsAdapter.notifyItemInserted(0);
+                    }
+                });
 
     }
 
     private void fetchComments() {
         Context context = this;
-        new Thread(() -> {
-            API
-                    .instance()
-                    .fetchComments(mPost.getId())
-                    .enqueue(new Callback<ArrayList<Comment>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ArrayList<Comment>> call, @NonNull Response<ArrayList<Comment>> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                comments.clear();
-                                comments.addAll(response.body());
-                                commentsAdapter.notifyDataSetChanged();
-                            } else {
+        Firebase
+                .fetchComments(mPost.getId(), _comments -> {
+                    if (_comments != null) {
+                        comments.clear();
+                        comments.addAll(_comments);
+                        commentsAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(context, "Error fetching comments", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                                Toast.makeText(context, "Error fetching comments", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<ArrayList<Comment>> call, @NonNull Throwable t) {
-                            Toast.makeText(context, "Error fetching comments", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }).start();
-    }
-
-    private void loadImage(File file, ImageView iv) {
-        if (file != null) {
-            Glide
-                    .with(mContext.getApplicationContext())
-                    .load(file)
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                    .into(iv);
-        }
     }
 
 }

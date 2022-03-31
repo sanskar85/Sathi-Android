@@ -1,10 +1,5 @@
 package com.abbvmk.sathi.screens.EditProfile;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,8 +8,12 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.widget.Toast;
 
-import com.abbvmk.sathi.Helper.API;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.core.content.ContextCompat;
+
 import com.abbvmk.sathi.Helper.AuthHelper;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.ChildDetail;
@@ -26,10 +25,6 @@ import com.abbvmk.sathi.screens.LandingPage.LandingPage;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ChildDetails extends AppCompatActivity implements ProgressButton.OnClickListener {
 
@@ -47,7 +42,6 @@ public class ChildDetails extends AppCompatActivity implements ProgressButton.On
         Intent intent = getIntent();
         fromHome = intent.getBooleanExtra("fromHome", false);
         user = AuthHelper.getLoggedUser();
-
         initView();
     }
 
@@ -123,51 +117,33 @@ public class ChildDetails extends AppCompatActivity implements ProgressButton.On
             submit.setViewEnabled(false);
             submit.buttonActivated();
             user.setChildDetails(childDetails);
-            API.instance().saveProfile(user).enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                    if (response.code() == 200 && response.body() != null) {
-                        AuthHelper.saveUser(response.body());
-                        MainApplication.fetchUsers();
 
-                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
-                        submit.buttonFinished("Saved");
-                        new Handler().postDelayed(() -> {
-                            if (!fromHome) {
-                                startActivity(new Intent(getApplicationContext(), LandingPage.class));
-                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                            }
-                            finish();
-                        }, 2000);
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+            Firebase
+                    .saveProfile(user, success -> {
+                        if (success) {
+                            MainApplication.fetchUsers();
+                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
+                            submit.buttonFinished("Saved");
+                            new Handler().postDelayed(() -> {
+                                if (!fromHome) {
+                                    startActivity(new Intent(getApplicationContext(), LandingPage.class));
+                                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                }
+                                finish();
+                            }, 2000);
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
 
-                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                        submit.buttonFinished("Failure");
-                        new Handler().postDelayed(() -> {
-                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                            submit.buttonFinished("Save");
-                            submit.setViewEnabled(true);
+                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
+                            submit.buttonFinished("Failure");
+                            new Handler().postDelayed(() -> {
+                                submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                                submit.buttonFinished("Save");
+                                submit.setViewEnabled(true);
 
-                        }, 3000);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-                    System.out.println(t.getMessage());
-                    Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
-                    submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                    submit.buttonFinished("Failure");
-
-                    new Handler().postDelayed(() -> {
-                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                        submit.buttonFinished("Save");
-                        submit.setViewEnabled(true);
-
-                    }, 3000);
-                }
-            });
+                            }, 3000);
+                        }
+                    });
         }).start();
 
     }

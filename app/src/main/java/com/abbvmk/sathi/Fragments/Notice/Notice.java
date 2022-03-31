@@ -2,40 +2,20 @@ package com.abbvmk.sathi.Fragments.Notice;
 
 
 import com.abbvmk.sathi.Helper.AuthHelper;
-import com.abbvmk.sathi.User.ChildDetail;
 import com.abbvmk.sathi.User.User;
-import com.abbvmk.sathi.User.UserValidationException;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
 
 public class Notice implements Serializable {
-
-    @SerializedName("_id")
-    @Expose
     private String id;
-
-    @SerializedName("title")
-    @Expose
-    private String title;
-
-    @SerializedName("filename")
-    @Expose
-    private String filename;
-
-    @SerializedName("time")
-    @Expose
-    private String time;
-
-    @SerializedName("message")
-    @Expose
+    private String file;
     private String message;
+    private String user;
 
-    @SerializedName("user")
-    @Expose
-    private User user;
+    @ServerTimestamp
+    private Date time;
 
 
     public String getId() {
@@ -46,27 +26,19 @@ public class Notice implements Serializable {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getFile() {
+        return file;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setFile(String filename) {
+        this.file = filename;
     }
 
-    public String getFilename() {
-        return filename;
-    }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -78,11 +50,11 @@ public class Notice implements Serializable {
         this.message = message;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 

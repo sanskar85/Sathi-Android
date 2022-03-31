@@ -2,6 +2,10 @@ package com.abbvmk.sathi.Fragments.Notice;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,20 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.abbvmk.sathi.Helper.API;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.Views.Loading.Loading;
 
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class NoticeList extends Fragment {
     private Context mContext;
@@ -69,28 +64,18 @@ public class NoticeList extends Fragment {
 
     private void fetchNotices() {
         loading.setProgressVisible(true);
-        new Thread(() -> {
-            API
-                    .instance()
-                    .fetchNotices()
-                    .enqueue(new Callback<ArrayList<Notice>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ArrayList<Notice>> call, @NonNull Response<ArrayList<Notice>> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                notices.clear();
-                                notices.addAll(response.body());
-                                adapter.notifyDataSetChanged();
-                                loading.setProgressVisible(false);
-                            } else {
-                                Toast.makeText(mContext, "Unable to load notices", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+        Firebase
+                .fetchNotice(_notices -> {
+                    if (_notices != null) {
+                        notices.clear();
+                        notices.addAll(_notices);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(mContext, "Unable to load notices", Toast.LENGTH_SHORT).show();
+                    }
+                    loading.setProgressVisible(false);
+                });
 
-                        @Override
-                        public void onFailure(@NonNull Call<ArrayList<Notice>> call, @NonNull Throwable t) {
-                            Toast.makeText(mContext, "Unable to load notices", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }).start();
+
     }
 }

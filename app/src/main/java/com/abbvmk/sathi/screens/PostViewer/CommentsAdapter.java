@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
 import com.bumptech.glide.Glide;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 
 public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.CommentsViewHolder> {
 
-    private ArrayList<Comment> list;
+    private final ArrayList<Comment> list;
 
     public CommentsAdapter(ArrayList<Comment> comments) {
         this.list = comments;
@@ -38,7 +39,11 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
     @Override
     public void onBindViewHolder(@NonNull CommentsViewHolder holder, int position) {
         Comment comment = list.get(position);
-        User user = comment.getUser();
+        User user = MainApplication.findUser(comment.getUser());
+        if (user == null) {
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        }
 
         holder.message.setText(comment.getMessage());
         holder.name.setText(user.getName());
@@ -50,7 +55,7 @@ public class CommentsAdapter extends RecyclerView.Adapter<CommentsAdapter.Commen
             FilesHelper
                     .downloadDP(holder.dp.getContext().getApplicationContext(),
                             user.getId(),
-                            ( file) -> loadImage(file, holder.dp));
+                            (file) -> loadImage(file, holder.dp));
         }
     }
 

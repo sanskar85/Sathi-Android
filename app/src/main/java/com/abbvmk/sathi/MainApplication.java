@@ -2,22 +2,18 @@ package com.abbvmk.sathi;
 
 import android.app.Application;
 
-import androidx.annotation.NonNull;
-
-import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.AuthHelper;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.User.User;
 import com.google.firebase.FirebaseApp;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainApplication extends Application {
     private static ArrayList<User> users;
+    private static Map<String, User> usersMap;
 
     @Override
     public void onCreate() {
@@ -25,6 +21,7 @@ public class MainApplication extends Application {
         FirebaseApp.initializeApp(getApplicationContext());
         AuthHelper.init(getApplicationContext());
         users = new ArrayList<>();
+        usersMap = new HashMap<>();
     }
 
     public static ArrayList<User> getUsers() {
@@ -33,23 +30,21 @@ public class MainApplication extends Application {
 
 
     public static void fetchUsers() {
-        new Thread(() -> {
-            API
-                    .instance()
-                    .fetchAllUsers()
-                    .enqueue(new Callback<ArrayList<User>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ArrayList<User>> call, @NonNull Response<ArrayList<User>> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                users = response.body();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<ArrayList<User>> call, @NonNull Throwable t) {
-
-                        }
-                    });
-        }).start();
+        Firebase
+                .fetchUsers(_users -> {
+                    usersMap.clear();
+                    users = _users;
+                    for (User u : _users) {
+                        usersMap.put(u.getId(), u);
+                    }
+                });
     }
+
+    public static User findUser(String userID) {
+        if (usersMap.containsKey(userID))
+            return usersMap.get(userID);
+        return null;
+    }
+
+
 }

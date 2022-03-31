@@ -1,30 +1,20 @@
 package com.abbvmk.sathi.Fragments.Posts;
 
 import com.abbvmk.sathi.Helper.AuthHelper;
-import com.abbvmk.sathi.User.ChildDetail;
 import com.abbvmk.sathi.User.User;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.firebase.firestore.ServerTimestamp;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
 
 public class Post implements Serializable {
-    @SerializedName("_id")
-    @Expose
     private String id;
-    @SerializedName("filename")
-    @Expose
-    private String filename;
-    @SerializedName("user")
-    @Expose
-    private User user;
-    @SerializedName("time")
-    @Expose
-    private String time;
-    @SerializedName("caption")
-    @Expose
+    private String photo;
+    private String user;
     private String caption;
+
+    @ServerTimestamp
+    private Date time;
 
 
     public String getId() {
@@ -35,27 +25,27 @@ public class Post implements Serializable {
         this.id = id;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getPhoto() {
+        return photo;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
+    public void setPhoto(String filename) {
+        this.photo = filename;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -71,7 +61,7 @@ public class Post implements Serializable {
 
         User me = AuthHelper.getLoggedUser();
         if (me == null) return false;
-        else if (getUser().getId().equals(me.getId())) return true;
+        else if (getUser().equals(me.getId())) return true;
         else if (me.getDesignation().equals("अध्यक्ष")) return true;
         else if (me.getDesignation().equals("सचिव")) return true;
         else if (me.getDesignation().equals("उपाध्यक्ष")) return true;

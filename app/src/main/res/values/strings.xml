@@ -95,5 +95,6 @@
     <string name="village">Village</string>
     <string name="post_office">Post Office</string>
     <string name="district">District</string>
+    <string name="dp">dp</string>
 
 </resources>

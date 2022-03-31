@@ -1,6 +1,5 @@
 package com.abbvmk.sathi.screens.CreatePost;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -16,14 +15,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.abbvmk.sathi.Fragments.Posts.Post;
-import com.abbvmk.sathi.Helper.API;
-import com.abbvmk.sathi.Helper.AuthHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.R;
-import com.abbvmk.sathi.User.User;
 import com.abbvmk.sathi.Views.ProgressButton.ProgressButton;
-import com.abbvmk.sathi.screens.EditProfile.ChildDetails;
-import com.abbvmk.sathi.screens.LandingPage.LandingPage;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -34,10 +29,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.Calendar;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CreatePost extends AppCompatActivity implements ProgressButton.OnClickListener {
 
@@ -114,66 +105,64 @@ public class CreatePost extends AppCompatActivity implements ProgressButton.OnCl
         submit.setViewEnabled(false);
         submit.buttonActivated();
         post.setCaption(text);
+
         if (uploadURI != null) {
-            new Thread(() -> {
-                String path = Calendar.getInstance().getTimeInMillis() + ".jpg";
-                StorageReference ref = mStorage.getReference("temp_files").child(path);
+            String path = Calendar.getInstance().getTimeInMillis() + ".jpg";
+            StorageReference ref = mStorage.getReference("post").child(path);
 
-                UploadTask uploadTask = ref.putFile(uploadURI);
+            UploadTask uploadTask = ref.putFile(uploadURI);
 
-                uploadTask
-                        .addOnFailureListener(exception -> Toast.makeText(getApplicationContext(), "Unable to upload your photo.", Toast.LENGTH_SHORT).show())
-                        .addOnSuccessListener(taskSnapshot -> {
-                            post.setFilename(path);
-                            uploadPost();
-                        });
-            }).start();
+            uploadTask.continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    if (task.getException() != null) {
+                        throw task.getException();
+                    } else {
+                        throw new Exception("File upload failed");
+                    }
+                }
+                return ref.getDownloadUrl();
+            }).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    post.setPhoto(downloadUri.toString());
+                    uploadPost();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Unable to upload your photo.", Toast.LENGTH_SHORT).show();
+                    submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
+                    submit.buttonFinished("Failure");
+
+                    new Handler().postDelayed(() -> {
+                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                        submit.buttonFinished("Upload");
+                        submit.setViewEnabled(true);
+                    }, 3000);
+                }
+            });
+
+
         } else {
             uploadPost();
         }
     }
 
     private void uploadPost() {
-        new Thread(() -> {
-            API
-                    .instance()
-                    .uploadPost(post)
-                    .enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                            if (response.code() == 200 && response.body() != null) {
-
-                                submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
-                                submit.buttonFinished("Uploaded");
-                                new Handler().postDelayed(() -> {
-                                    finish();
-                                }, 2000);
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
-                                submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                                submit.buttonFinished("Failure");
-                                new Handler().postDelayed(() -> {
-                                    submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                                    submit.buttonFinished("Upload");
-                                    submit.setViewEnabled(true);
-                                }, 3000);
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                            System.out.println(t.getMessage());
-                            Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
-                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                            submit.buttonFinished("Failure");
-                            new Handler().postDelayed(() -> {
-                                submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                                submit.buttonFinished("Upload");
-                                submit.setViewEnabled(true);
-                            }, 3000);
-                        }
-                    });
-        }).start();
+        Firebase
+                .createPost(post, success -> {
+                    if (success) {
+                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
+                        submit.buttonFinished("Uploaded");
+                        new Handler().postDelayed(this::finish, 2000);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                        submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
+                        submit.buttonFinished("Failure");
+                        new Handler().postDelayed(() -> {
+                            submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                            submit.buttonFinished("Upload");
+                            submit.setViewEnabled(true);
+                        }, 3000);
+                    }
+                });
     }
 
 

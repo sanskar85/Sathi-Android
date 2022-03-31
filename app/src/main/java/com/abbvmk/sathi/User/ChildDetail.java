@@ -1,30 +1,16 @@
 
 package com.abbvmk.sathi.User;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 public class ChildDetail implements Serializable {
 
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("dob")
-    @Expose
     private String dob;
-    @SerializedName("marital_status")
-    @Expose
     private String maritalStatus;
-    @SerializedName("occupation")
-    @Expose
     private String occupation;
-    @SerializedName("qualification")
-    @Expose
     private String qualification;
-    @SerializedName("_id")
-    @Expose
     private String id;
 
     public String getName() {

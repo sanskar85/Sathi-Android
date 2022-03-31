@@ -6,15 +6,126 @@
     android:layout_height="wrap_content"
     tools:context=".Fragments.Profile.IDCard">
 
-
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/idcard"
-        android:scaleType="fitXY"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="#B68733"
+        app:strokeWidth="2dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingBottom="10dp">
+
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="@string/logo"
+                android:src="@drawable/logo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/title1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="@string/title"
+                android:textColor="@color/accent_red"
+                android:textSize="18sp"
+                app:layout_constraintStart_toEndOf="@id/logo"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/title2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="@string/_khagaria_ekai"
+                android:textColor="@color/accent_blue"
+                android:textSize="18sp"
+                app:layout_constraintStart_toEndOf="@id/logo"
+                app:layout_constraintTop_toBottomOf="@+id/title1" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/dp_wrapper"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logo"
+                app:strokeColor="#b47d04"
+                app:strokeWidth="3dp">
+
+                <ImageView
+                    android:id="@+id/dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:contentDescription="@string/dp"
+                    android:src="@drawable/ic_profile" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/montserrat_semibold"
+                android:textColor="#00ff02"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@id/dp_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/title2" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/montserrat_semibold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@id/dp_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/id" />
+
+            <TextView
+                android:id="@+id/relationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/montserrat_semibold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@id/dp_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/name" />
+
+            <TextView
+                android:id="@+id/designation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:fontFamily="@font/montserrat_semibold"
+                android:textColor="#9c02f6"
+                android:textSize="16sp"
+                app:layout_constraintStart_toEndOf="@id/dp_wrapper"
+                app:layout_constraintTop_toBottomOf="@id/relationName" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
     <com.google.android.material.card.MaterialCardView
@@ -38,7 +149,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="10dp"
+                android:contentDescription="@string/share"
                 android:src="@drawable/ic_whatsapp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +161,8 @@
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingStart="10dp"
                 android:paddingEnd="20dp"
-                android:text="Share"
+                android:text="@string/share"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"

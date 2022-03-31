@@ -3,6 +3,7 @@ package com.abbvmk.sathi.Fragments.Notice;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,21 +16,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.abbvmk.sathi.Helper.API;
 import com.abbvmk.sathi.Helper.FilesHelper;
+import com.abbvmk.sathi.Helper.Firebase;
+import com.abbvmk.sathi.Helper.GlideHelper;
+import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.imageview.ShapeableImageView;
+
+import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.Locale;
 
 public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -41,6 +40,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_MESSAGE = 4;
     private final ArrayList<Notice> notices;
     private final Context mContext;
+    private final PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
 
     public NoticeListAdapter(Context mContext, ArrayList<Notice> notices) {
         this.mContext = mContext;
@@ -101,22 +101,26 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
         Notice notice = notices.get(position);
+        User user = MainApplication.findUser(notice.getUser());
+        if (user == null) {
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        }
         if (viewType == TYPE_UNSUPPORTED) {
             holder.itemView.setVisibility(View.GONE);
         } else if (viewType == TYPE_PDF || viewType == TYPE_AUDIO) {
-            User user = notice.getUser();
             FileViewHolder fileViewHolder = (FileViewHolder) holder;
 
             fileViewHolder.name.setText(user.getName());
             fileViewHolder.designation.setText(user.getDesignation());
             fileViewHolder.title.setText(R.string.click_here_to_open);
-            fileViewHolder.time.setText(notice.getTime());
+            fileViewHolder.time.setText(prettyTime.format(notice.getTime()));
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {
-                loadImage(file, fileViewHolder.dp);
+                GlideHelper.loadDPImage(holder.itemView.getContext(), file, fileViewHolder.dp);
             } else {
                 FilesHelper.downloadDP(mContext, user.getId(), (dpFile) -> {
-                    loadImage(dpFile, fileViewHolder.dp);
+                    GlideHelper.loadDPImage(holder.itemView.getContext(), dpFile, fileViewHolder.dp);
                 });
             }
             fileViewHolder.itemView.setOnClickListener(v -> {
@@ -144,19 +148,17 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             setupDeleteBTN(notice, fileViewHolder.delete, position);
         } else if (viewType == TYPE_IMAGE) {
-            System.out.println(notice.getMessage());
-            User user = notice.getUser();
             GeneralViewHolder generalViewHolder = (GeneralViewHolder) holder;
             generalViewHolder.name.setText(user.getName());
             generalViewHolder.designation.setText(user.getDesignation());
             generalViewHolder.message.setText(notice.getMessage());
-            generalViewHolder.time.setText(notice.getTime());
+            generalViewHolder.time.setText(prettyTime.format(notice.getTime()));
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {
-                loadImage(file, generalViewHolder.dp);
+                GlideHelper.loadDPImage(holder.itemView.getContext(), file, generalViewHolder.dp);
             } else {
                 FilesHelper.downloadDP(mContext, user.getId(), (dpFile) -> {
-                    loadImage(dpFile, generalViewHolder.dp);
+                    GlideHelper.loadDPImage(holder.itemView.getContext(), dpFile, generalViewHolder.dp);
                 });
             }
 
@@ -164,16 +166,20 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             System.out.println(noticeFile);
             if (noticeFile == null) {
                 FilesHelper.downloadNotice(mContext, notice, (noticeFile1) -> {
-                    loadImage(noticeFile1, generalViewHolder.image);
+                    GlideHelper.loadNoticeImage(holder.itemView.getContext(), noticeFile1, generalViewHolder.image);
                 });
             } else {
-                loadImage(noticeFile, generalViewHolder.image);
+                GlideHelper.loadNoticeImage(holder.itemView.getContext(), noticeFile, generalViewHolder.image);
+            }
+
+            if (notice.getFile() == null) {
+                GlideHelper.loadPostImage(holder.itemView.getContext(), notice.getFile(), generalViewHolder.image);
             }
 
             setupDeleteBTN(notice, generalViewHolder.delete, position);
         } else if (viewType == TYPE_MESSAGE) {
-            User user = notice.getUser();
             GeneralViewHolder generalViewHolder = (GeneralViewHolder) holder;
+            generalViewHolder.time.setText(prettyTime.format(notice.getTime()));
             generalViewHolder.image.setVisibility(View.GONE);
             generalViewHolder.name.setText(user.getName());
             generalViewHolder.designation.setText(user.getDesignation());
@@ -181,10 +187,10 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {
-                loadImage(file, generalViewHolder.dp);
+                GlideHelper.loadDPImage(holder.itemView.getContext(), file, generalViewHolder.dp);
             } else {
                 FilesHelper.downloadDP(mContext, user.getId(), (dpFile) -> {
-                    loadImage(dpFile, generalViewHolder.dp);
+                    GlideHelper.loadDPImage(holder.itemView.getContext(), dpFile, generalViewHolder.dp);
                 });
             }
 
@@ -197,26 +203,17 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             delete.setVisibility(View.VISIBLE);
             delete.setOnClickListener(v -> {
                 Toast.makeText(mContext, "Deleting ...", Toast.LENGTH_SHORT).show();
-                API
-                        .instance()
-                        .deleteNotice(notice.getId())
-                        .enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(Call<String> call, Response<String> response) {
-                                if (response.code() == 200) {
-                                    Toast.makeText(mContext, "Notice deleted", Toast.LENGTH_SHORT).show();
-                                    notices.remove(notice);
-                                    notifyItemRemoved(position);
-                                } else {
-                                    Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                Firebase
+                        .deleteNotice(notice.getId(), success -> {
+                            if (success) {
+                                Toast.makeText(mContext, "Notice deleted", Toast.LENGTH_SHORT).show();
+                                notices.remove(notice);
+                                notifyItemRemoved(position);
+                            } else {
                                 Toast.makeText(mContext, "Unable to delete this post", Toast.LENGTH_SHORT).show();
                             }
                         });
+
             });
         }
     }
@@ -240,8 +237,8 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public int getItemViewType(int position) {
         Notice notice = notices.get(position);
-        if (notice.getFilename() != null) {
-            String ext = getFileExtension(notice.getFilename());
+        if (notice.getFile() != null && !TextUtils.isEmpty(notice.getFile())) {
+            String ext = getFileExtension(notice.getFile());
             if (ext.contains("pdf")) {
                 return TYPE_PDF;
             } else if (ext.contains("mp3")) {
@@ -259,17 +256,6 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public int getItemCount() {
         return notices.size();
-    }
-
-    private void loadImage(File file, ImageView dp) {
-        if (file != null && mContext != null) {
-            Glide
-                    .with(mContext)
-                    .load(file)
-                    .apply(RequestOptions.skipMemoryCacheOf(true))
-                    .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                    .into(dp);
-        }
     }
 
     private String getFileExtension(String name) {

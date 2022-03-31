@@ -1,27 +1,21 @@
 package com.abbvmk.sathi.screens.Admin.Designation;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.abbvmk.sathi.Fragments.Members.MembersListAdapter;
-import com.abbvmk.sathi.Helper.API;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.Views.ProgressButton.ProgressButton;
 
 import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class CreateDesignation extends AppCompatActivity implements ProgressButton.OnClickListener {
     private ProgressButton save;
@@ -49,30 +43,16 @@ public class CreateDesignation extends AppCompatActivity implements ProgressButt
     }
 
     private void fetchDesignations() {
-        new Thread(() -> {
-
-            API
-                    .instance()
-                    .fetchDesignations()
-                    .enqueue(new Callback<ArrayList<String>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ArrayList<String>> call, @NonNull Response<ArrayList<String>> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                designations.clear();
-                                designations.addAll(response.body());
-                                adapter.notifyDataSetChanged();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<ArrayList<String>> call, @NonNull Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }).start();
+        Firebase
+                .fetchDesignations(strings -> {
+                    if (strings != null) {
+                        designations.clear();
+                        designations.addAll(strings);
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -84,45 +64,30 @@ public class CreateDesignation extends AppCompatActivity implements ProgressButt
         }
         save.setViewEnabled(false);
         save.buttonActivated();
-        API
-                .instance()
-                .createDesignations(title)
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+
+        Firebase
+                .createDesignations(title, success -> {
+                    if (success) {
                         designations.add(title);
                         adapter.notifyItemInserted(designations.size() - 1);
-                        if (response.code() == 200) {
-                            save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
-                            save.buttonFinished("Created");
-                            new Handler().postDelayed(() -> {
-                                save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                                save.buttonFinished("Create Another");
-                                save.setViewEnabled(true);
-                            }, 1000);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Unable to create designation", Toast.LENGTH_SHORT).show();
-                            save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
-                            save.buttonFinished("Failure");
-                            new Handler().postDelayed(() -> {
-                                save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                                save.buttonFinished("Create");
-                                save.setViewEnabled(true);
-                            }, 3000);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+                        save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.success));
+                        save.buttonFinished("Created");
+                        new Handler().postDelayed(() -> {
+                            save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
+                            save.buttonFinished("Create Another");
+                            save.setViewEnabled(true);
+                        }, 1000);
+                    } else {
                         Toast.makeText(getApplicationContext(), "Unable to create designation", Toast.LENGTH_SHORT).show();
                         save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
                         save.buttonFinished("Failure");
                         new Handler().postDelayed(() -> {
                             save.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.progress_bar_background));
-                            save.buttonFinished("Save");
+                            save.buttonFinished("Create");
                             save.setViewEnabled(true);
                         }, 3000);
                     }
                 });
+
     }
 }

@@ -2,27 +2,28 @@ package com.abbvmk.sathi.Helper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.abbvmk.sathi.BuildConfig;
-import com.abbvmk.sathi.Fragments.Posts.Post;
 import com.abbvmk.sathi.Fragments.Notice.Notice;
+import com.abbvmk.sathi.Fragments.Posts.Post;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FilesHelper {
 
@@ -40,17 +41,8 @@ public class FilesHelper {
         }
     }
 
-    public static File idCard(@NonNull Context context, @NonNull String userID) {
-        File file = new File(context.getExternalFilesDir("ids"), userID + ".jpg");
-        if (file.exists() && file.isFile()) {
-            return file;
-        } else {
-            return null;
-        }
-    }
-
     public static File getNoticeFile(@NonNull Context context, Notice notice) {
-        File file = new File(context.getExternalFilesDir("notice"), notice.getFilename());
+        File file = new File(context.getExternalFilesDir("notice"), notice.getFile());
         if (file.exists() && file.isFile()) {
             return file;
         } else {
@@ -59,7 +51,7 @@ public class FilesHelper {
     }
 
     public static File post(@NonNull Context context, @NonNull Post post) {
-        File file = new File(context.getExternalFilesDir("post"), post.getFilename());
+        File file = new File(context.getExternalFilesDir("post"), post.getPhoto());
         if (file.exists() && file.isFile()) {
             return file;
         } else {
@@ -68,278 +60,57 @@ public class FilesHelper {
     }
 
     public static void downloadDP(@NonNull Context context, @NonNull String userID, FileResponse callback) {
-        API
-                .instance()
-                .getDPDownloadLink(userID)
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            String url = response.body();
-                            final String resolvedURL = response.body().substring(1, url.length() - 1);
-                            API
-                                    .instance()
-                                    .downloadFile(resolvedURL)
-                                    .enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+        File file = new File(context.getExternalFilesDir("dp"), userID + ".jpg");
+        File tempFile;
+        try {
+            tempFile = File.createTempFile(userID, ".jpg");
+        } catch (IOException e) {
+            return;
+        }
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference dpRef = storageRef.child("dp/" + userID + ".jpg");
 
-                                            if (response.isSuccessful() && response.body() != null) {
-                                                File file = new File(context.getExternalFilesDir("dp"), userID + ".jpg");
-                                                boolean fileSaved = saveFile(file, response.body());
-                                                if (fileSaved && callback != null) {
-                                                    callback.onFileDownloaded(file);
-
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                                        }
-                                    });
+        File finalTempFile = tempFile;
+        dpRef.getFile(finalTempFile)
+                .addOnSuccessListener(taskSnapshot -> {
+                    try {
+                        copy(finalTempFile, file);
+                        if (callback != null) {
+                            callback.onFileDownloaded(file);
+                            tempFile.delete();
                         }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
-                    }
-                });
-    }
-
-
-    public static void downloadID(@NonNull Context context, @NonNull String userID, FileResponse callback) {
-        API
-                .instance()
-                .getIDDownloadLink(userID)
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            String url = response.body();
-                            final String resolvedURL = response.body().substring(1, url.length() - 1);
-                            API
-                                    .instance()
-                                    .downloadFile(resolvedURL)
-                                    .enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
-                                            if (response.isSuccessful() && response.body() != null) {
-                                                File file = new File(context.getExternalFilesDir("ids"), userID + ".jpg");
-                                                boolean fileSaved = saveFile(file, response.body());
-                                                if (fileSaved && callback != null) {
-                                                    callback.onFileDownloaded(file);
-
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 });
     }
 
 
     public static void downloadNotice(@NonNull Context context, @NonNull Notice notice, FileResponse callback) {
-        API
-                .instance()
-                .getNoticeDownloadLink(notice.getId())
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            String url = response.body();
-                            final String resolvedURL = response.body().substring(1, url.length() - 1);
-                            API
-                                    .instance()
-                                    .downloadFile(resolvedURL)
-                                    .enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
-                                            if (response.isSuccessful() && response.body() != null) {
-                                                File file = new File(context.getExternalFilesDir("notice"), notice.getFilename());
-                                                boolean fileSaved = saveFile(file, response.body());
-                                                if (fileSaved && callback != null) {
-                                                    callback.onFileDownloaded(file);
-
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
-                    }
-                });
-    }
-
-
-    public static void downloadPost(Context context, Post post, FileResponse callback) {
-        API
-                .instance()
-                .getPostDownloadLink(post.getId())
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            String url = response.body();
-                            final String resolvedURL = response.body().substring(1, url.length() - 1);
-                            API
-                                    .instance()
-                                    .downloadFile(resolvedURL)
-                                    .enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
-                                            if (response.isSuccessful() && response.body() != null) {
-                                                File file = new File(context.getExternalFilesDir("post"), post.getFilename());
-                                                boolean fileSaved = saveFile(file, response.body());
-                                                if (fileSaved && callback != null) {
-                                                    callback.onFileDownloaded(file);
-
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
-                    }
-                });
-
-    }
-
-
-    public static void downloadUpdate(Context context, int resultCode, FileResponse callback) {
-        API
-                .instance()
-                .checkForUpdates(BuildConfig.VERSION_CODE)
-                .enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            String url = response.body();
-                            final String resolvedURL = response.body().substring(1, url.length() - 1);
-                            API
-                                    .instance()
-                                    .downloadFile(resolvedURL)
-                                    .enqueue(new Callback<ResponseBody>() {
-                                        @Override
-                                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-
-                                            if (response.isSuccessful() && response.body() != null) {
-
-                                                File file = null;
-                                                try {
-                                                    file = File.createTempFile("update", ".apk", context.getExternalCacheDir());
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                    return;
-                                                }
-
-                                                boolean fileSaved = saveFile(file, response.body());
-                                                if (fileSaved && callback != null) {
-                                                    callback.onFileDownloaded(file);
-
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-
-                    }
-                });
-
-    }
-
-
-    private static boolean saveFile(@NonNull File dest, ResponseBody body) {
+        File file = new File(context.getExternalFilesDir("notice"), notice.getFile());
+        File tempFile;
         try {
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                File tempFile = File.createTempFile(dest.getName(), getExtension(dest));
-                byte[] fileReader = new byte[4096];
-
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(tempFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                }
-
-                outputStream.flush();
-
-                copy(tempFile, dest);
-
-                Log.d(FilesHelper.class.getName(), "file download: at " + dest.getAbsolutePath() + " " + fileSizeDownloaded + " of " + fileSize);
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.d(FilesHelper.class.getName(), "file download Failed");
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
+            tempFile = File.createTempFile(notice.getId(), getExtension(file));
         } catch (IOException e) {
-            return false;
+            return;
         }
-    }
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference noticeRef = storageRef.child("notices/" + notice.getFile());
 
+        File finalTempFile = tempFile;
+        noticeRef.getFile(finalTempFile)
+                .addOnSuccessListener(taskSnapshot -> {
+                    try {
+                        copy(finalTempFile, file);
+                        if (callback != null) {
+                            callback.onFileDownloaded(file);
+                            tempFile.delete();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
 
     public static String getExtension(@NonNull File file) {
         // convert the file name into string
@@ -417,5 +188,53 @@ public class FilesHelper {
         return fileName;
     }
 
+
+    public static File drawableToFile(Context mContext, Drawable drawable) {
+        Bitmap bitmap = drawableToBitmap(drawable);
+        return bitmapToFile(mContext, bitmap);
+    }
+
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    public static File bitmapToFile(Context mContext, Bitmap inImage) {
+        try {
+            File file = File.createTempFile(String.valueOf(System.currentTimeMillis()), ".jpg", mContext.getExternalCacheDir());
+
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            byte[] bitmapData = bytes.toByteArray();
+
+            //write the bytes in file
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapData);
+            fos.flush();
+            fos.close();
+            return file;
+        } catch (IOException e) {
+            return null;
+        }
+
+    }
 
 }

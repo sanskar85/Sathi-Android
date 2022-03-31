@@ -4,16 +4,13 @@ package com.abbvmk.sathi.Helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 
 import com.abbvmk.sathi.User.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class AuthHelper {
@@ -74,26 +71,11 @@ public class AuthHelper {
     public static void fetchUserProfile() {
         User user = getLoggedUser();
         if (user == null) return;
-        API
-                .instance()
-                .fetchProfile(user.getId())
-                .enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(@NonNull Call<User> call, @NonNull Response<User> response) {
-                        if (response.code() == 200 && response.body() != null) {
-                            saveUser(response.body());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<User> call, @NonNull Throwable t) {
-
-                    }
-                });
+        Firebase
+                .fetchMyProfile(null);
     }
 
     public static void saveUser(User user) {
-        user.setUploadPath(null);
         Gson gson = new Gson();
         String json = gson.toJson(user);
         sharedPreferences.edit().putString("User", json).apply();
@@ -102,5 +84,9 @@ public class AuthHelper {
     public static boolean isAdmin() {
         User user = getLoggedUser();
         return user != null && user.isAdmin();
+    }
+
+    public static String getUID() {
+        return FirebaseAuth.getInstance().getUid();
     }
 }

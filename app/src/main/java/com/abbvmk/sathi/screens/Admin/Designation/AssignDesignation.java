@@ -1,34 +1,29 @@
 package com.abbvmk.sathi.screens.Admin.Designation;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatEditText;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.abbvmk.sathi.Fragments.Members.MembersList;
 import com.abbvmk.sathi.Fragments.Members.MembersListAdapter;
-import com.abbvmk.sathi.Helper.API;
+import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.MainApplication;
 import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AssignDesignation extends AppCompatActivity implements MembersListAdapter.MemberCardInterface {
 
@@ -42,6 +37,7 @@ public class AssignDesignation extends AppCompatActivity implements MembersListA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.screen_assign_designation);
         searchBar = findViewById(R.id.searchBar);
+        designations = new ArrayList<>();
     }
 
     @Override
@@ -88,28 +84,15 @@ public class AssignDesignation extends AppCompatActivity implements MembersListA
     }
 
     private void fetchDesignations() {
-        new Thread(() -> {
-
-            API
-                    .instance()
-                    .fetchDesignations()
-                    .enqueue(new Callback<ArrayList<String>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<ArrayList<String>> call, @NonNull Response<ArrayList<String>> response) {
-                            if (response.code() == 200 && response.body() != null) {
-                                designations = response.body();
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(@NonNull Call<ArrayList<String>> call, @NonNull Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        }).start();
+        Firebase
+                .fetchDesignations(strings -> {
+                    if (strings != null) {
+                        designations.clear();
+                        designations.addAll(strings);
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Unable to fetch designations", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -119,7 +102,7 @@ public class AssignDesignation extends AppCompatActivity implements MembersListA
             return;
         }
 
-        View customView = getLayoutInflater().inflate(R.layout.designation_chooser, null);
+        View customView = View.inflate(this, R.layout.designation_chooser, null);
 
 
         final Dialog dialog = new Dialog(this);
@@ -130,26 +113,17 @@ public class AssignDesignation extends AppCompatActivity implements MembersListA
         RecyclerView designationRecycler = customView.findViewById(R.id.designationRecycler);
         DesignationAdapter adapter = new DesignationAdapter(designations, selectedDesignation -> {
             dialog.dismiss();
-            new Thread(() -> {
-                API
-                        .instance()
-                        .requestDesignationUpdate(user.getId(), selectedDesignation)
-                        .enqueue(new Callback<String>() {
-                            @Override
-                            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-                                if (response.code() == 200) {
-                                    Toast.makeText(getApplicationContext(), "Designation update request created", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Unable to update designation", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Unable to update designation", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }).start();
+            PendingDesignationClass pendingDesignation = new PendingDesignationClass();
+            pendingDesignation.setDesignation(selectedDesignation);
+            pendingDesignation.setRequestedFor(user.getId());
+            Firebase
+                    .requestDesignationUpdate(pendingDesignation, success -> {
+                        if (success) {
+                            Toast.makeText(getApplicationContext(), "Designation update request created", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Unable to update designation", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
         designationRecycler.setHasFixedSize(true);
         designationRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
