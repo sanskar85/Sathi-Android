@@ -1,6 +1,5 @@
 package com.abbvmk.sathi.screens.Admin.Notice;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -166,7 +165,7 @@ public class CreateNotice extends AppCompatActivity implements ProgressButton.On
     ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
+                if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
                     // There are no request codes
                     Intent data = result.getData();
                     if (data != null) {

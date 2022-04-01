@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatEditText;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.abbvmk.sathi.MainApplication;
@@ -130,7 +131,7 @@ public class Members extends Fragment {
                 if (searchFrag != null)
                     searchFrag.setUsers(usersFiltered);
             } else {
-                Activity activity = Members.this.getActivity();
+                FragmentActivity activity = Members.this.getActivity();
                 if (activity == null) return;
                 MembersList searchFrag = new MembersList(mContext, usersFiltered);
                 activity.runOnUiThread(() -> {

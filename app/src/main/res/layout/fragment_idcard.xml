@@ -29,7 +29,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:contentDescription="@string/logo"
-                android:src="@drawable/logo"
+                app:srcCompat="@drawable/logo"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -76,7 +76,7 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:contentDescription="@string/dp"
-                    android:src="@drawable/ic_profile" />
+                    app:srcCompat="@drawable/ic_profile" />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -150,7 +150,7 @@
                 android:layout_height="40dp"
                 android:layout_marginStart="20dp"
                 android:contentDescription="@string/share"
-                android:src="@drawable/ic_whatsapp"
+                app:srcCompat="@drawable/ic_whatsapp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
