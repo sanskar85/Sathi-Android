@@ -59,7 +59,7 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
     private void fetchUpdates() {
 
         Firebase
-                .checkForUpdates(file -> {
+                .checkForUpdates(this, file -> {
                     Uri uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
                     AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                     alertDialog.setTitle("New Update found");

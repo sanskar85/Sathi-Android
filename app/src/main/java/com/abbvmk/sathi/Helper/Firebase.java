@@ -1,5 +1,7 @@
 package com.abbvmk.sathi.Helper;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.abbvmk.sathi.BuildConfig;
@@ -454,7 +456,7 @@ public class Firebase {
     //    ----------------------------------------------------------- UPDATE -------------------------------------------
 
 
-    public static void checkForUpdates(@NonNull UpdateCallback callback) {
+    public static void checkForUpdates(Context context,@NonNull UpdateCallback callback) {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db
@@ -471,14 +473,14 @@ public class Firebase {
                         return;
                     }
 
-                    downloadUpdate(snapshot.get("path", String.class), callback);
+                    downloadUpdate(context,snapshot.get("path", String.class), callback);
                 });
     }
 
-    private static void downloadUpdate(String filename, @NonNull UpdateCallback callback) {
+    private static void downloadUpdate(Context context, String filename, @NonNull UpdateCallback callback) {
         File tempFile;
         try {
-            tempFile = File.createTempFile("Update", ".apk");
+            tempFile = File.createTempFile("Update", ".apk", context.getExternalCacheDir());
         } catch (IOException e) {
             return;
         }
