@@ -128,8 +128,10 @@ public class Members extends Fragment {
             }
             if (searchResultContainer.getVisibility() == View.VISIBLE) {
                 MembersList searchFrag = (MembersList) getChildFragmentManager().findFragmentById(R.id.searchResultContainer);
-                if (searchFrag != null)
-                    searchFrag.setUsers(usersFiltered);
+                if (searchFrag != null && getActivity() != null)
+                    getActivity().runOnUiThread(() -> {
+                        searchFrag.setUsers(usersFiltered);
+                    });
             } else {
                 FragmentActivity activity = Members.this.getActivity();
                 if (activity == null) return;
