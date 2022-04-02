@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abbvmk.sathi.Helper.DateHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.Helper.GlideHelper;
@@ -24,11 +25,8 @@ import com.abbvmk.sathi.R;
 import com.abbvmk.sathi.User.User;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -40,7 +38,6 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_MESSAGE = 4;
     private final ArrayList<Notice> notices;
     private final Context mContext;
-    private final PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
 
     public NoticeListAdapter(Context mContext, ArrayList<Notice> notices) {
         this.mContext = mContext;
@@ -114,7 +111,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             fileViewHolder.name.setText(user.getName());
             fileViewHolder.designation.setText(user.getDesignation());
             fileViewHolder.title.setText(R.string.click_here_to_open);
-            fileViewHolder.time.setText(prettyTime.format(notice.getTime()));
+            fileViewHolder.time.setText(DateHelper.format(notice.getTime()));
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {
                 GlideHelper.loadDPImage(holder.itemView.getContext(), file, fileViewHolder.dp);
@@ -152,7 +149,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             generalViewHolder.name.setText(user.getName());
             generalViewHolder.designation.setText(user.getDesignation());
             generalViewHolder.message.setText(notice.getMessage());
-            generalViewHolder.time.setText(prettyTime.format(notice.getTime()));
+            generalViewHolder.time.setText(DateHelper.format(notice.getTime()));
             File file = FilesHelper.dp(mContext, user.getId());
             if (file != null) {
                 GlideHelper.loadDPImage(holder.itemView.getContext(), file, generalViewHolder.dp);
@@ -179,7 +176,7 @@ public class NoticeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             setupDeleteBTN(notice, generalViewHolder.delete, position);
         } else if (viewType == TYPE_MESSAGE) {
             GeneralViewHolder generalViewHolder = (GeneralViewHolder) holder;
-            generalViewHolder.time.setText(prettyTime.format(notice.getTime()));
+            generalViewHolder.time.setText(DateHelper.format(notice.getTime()));
             generalViewHolder.image.setVisibility(View.GONE);
             generalViewHolder.name.setText(user.getName());
             generalViewHolder.designation.setText(user.getDesignation());

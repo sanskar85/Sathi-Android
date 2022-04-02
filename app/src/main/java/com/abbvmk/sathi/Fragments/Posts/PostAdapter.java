@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.abbvmk.sathi.Helper.DateHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.Helper.GlideHelper;
@@ -23,19 +24,15 @@ import com.abbvmk.sathi.User.User;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     private final Context mContext;
     private final ArrayList<Post> posts;
     private final PostCardInterface postCardInterface;
-    private final PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
 
     public interface PostCardInterface {
         void profileHeaderClicker(User user);
@@ -105,7 +102,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
         holder.name.setText(user.getName());
         holder.designation.setText(user.getDesignation());
-        holder.time.setText(prettyTime.format(post.getTime()));
+        holder.time.setText(DateHelper.format(post.getTime()));
         holder.caption.setText(post.getCaption());
 
         holder.dp.setOnClickListener(v -> {

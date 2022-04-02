@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.abbvmk.sathi.Fragments.Posts.Post;
+import com.abbvmk.sathi.Helper.DateHelper;
 import com.abbvmk.sathi.Helper.FilesHelper;
 import com.abbvmk.sathi.Helper.Firebase;
 import com.abbvmk.sathi.Helper.GlideHelper;
@@ -30,11 +31,8 @@ import com.abbvmk.sathi.Views.Loading.Loading;
 import com.abbvmk.sathi.screens.ProfileViewer.ProfileViewer;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class PostViewer extends AppCompatActivity {
 
@@ -102,8 +100,7 @@ public class PostViewer extends AppCompatActivity {
 
         name.setText(user.getName());
         designation.setText(user.getDesignation());
-        PrettyTime prettyTime = new PrettyTime(Locale.ENGLISH);
-        time.setText(prettyTime.format(mPost.getTime()));
+        time.setText(DateHelper.format(mPost.getTime()));
         caption.setText(mPost.getCaption());
 
         dp.setOnClickListener(v -> {
