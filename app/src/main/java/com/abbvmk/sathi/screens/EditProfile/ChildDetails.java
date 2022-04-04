@@ -98,22 +98,23 @@ public class ChildDetails extends AppCompatActivity implements ProgressButton.On
         if (!submit.isViewEnabled()) {
             return;
         }
+        ArrayList<ChildDetail> childDetails = new ArrayList<>();
+        try {
+            for (ChildDetailView view : childView) {
+                view.resolveData();
+                view.getChildDetail().validate();
+                childDetails.add(view.getChildDetail());
+            }
+        } catch (UserValidationException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            return;
+        } catch (Exception e) {
+            Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
         new Thread(() -> {
 
-            ArrayList<ChildDetail> childDetails = new ArrayList<>();
-            try {
-                for (ChildDetailView view : childView) {
-                    view.resolveData();
-                    view.getChildDetail().validate();
-                    childDetails.add(view.getChildDetail());
-                }
-            } catch (UserValidationException e) {
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                return;
-            } catch (Exception e) {
-                Toast.makeText(this, "Fields cannot be empty", Toast.LENGTH_SHORT).show();
-                return;
-            }
+
             submit.setViewEnabled(false);
             submit.buttonActivated();
             user.setChildDetails(childDetails);
