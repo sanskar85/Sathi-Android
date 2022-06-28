@@ -44,7 +44,7 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
     private RadioGroup gender, relationType, maritalStatus;
     private RadioButton male, female, s_o, d_o, w_o, married, unmarried, widowed, separated;
     private ProgressButton submit;
-    private boolean fromHome;
+    private boolean newMember;
     private Uri dpPath;
     private FirebaseStorage mStorage;
 
@@ -54,11 +54,14 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
         setContentView(R.layout.screen_edit_profile);
 
         Intent intent = getIntent();
-        fromHome = intent.getBooleanExtra("fromHome", false);
-
-        user = AuthHelper.getLoggedUser();
-        if (user == null) {
+        newMember = intent.getBooleanExtra("newMember", false);
+        if (newMember) {
             user = new User();
+        } else {
+            user = AuthHelper.getLoggedUser();
+            if (user == null) {
+                user = new User();
+            }
         }
         mStorage = FirebaseStorage.getInstance();
 
@@ -284,11 +287,8 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
 
                             if (user.getMaritalStatus().equalsIgnoreCase("Married")) {
                                 Intent intent = new Intent(getApplicationContext(), ChildDetails.class);
-                                intent.putExtra("fromHome", fromHome);
+                                intent.putExtra("newMember",newMember);
                                 startActivity(intent);
-                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                            } else if (!fromHome) {
-                                startActivity(new Intent(getApplicationContext(), LandingPage.class));
                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                             }
 
@@ -296,7 +296,7 @@ public class EditProfile extends AppCompatActivity implements ProgressButton.OnC
 
                         }, 2000);
                     } else {
-                        Toast.makeText(getApplicationContext(), "Unable to save your profile", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Unable to save profile", Toast.LENGTH_SHORT).show();
                         submit.setCardBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.failure));
                         submit.buttonFinished("Failure");
 

@@ -171,6 +171,7 @@ public class Firebase {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db
                 .collection("users")
+                .orderBy("memberId", Query.Direction.ASCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     ArrayList<User> list = new ArrayList<>();

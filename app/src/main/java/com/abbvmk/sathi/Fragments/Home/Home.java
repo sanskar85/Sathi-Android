@@ -76,7 +76,7 @@ public class Home extends Fragment {
                 (tab, position) -> {
                     String title = null;
                     if (position == 0) {
-                        title = "Committee";
+                        title = "Admin";
                     } else if (position == 1) {
                         title = "Purpose";
                     } else if (position == 2) {

@@ -23,6 +23,7 @@ import com.abbvmk.sathi.screens.Admin.Designation.AssignDesignation;
 import com.abbvmk.sathi.screens.Admin.Designation.CreateDesignation;
 import com.abbvmk.sathi.screens.Admin.Designation.PendingDesignation;
 import com.abbvmk.sathi.screens.Admin.Notice.CreateNotice;
+import com.abbvmk.sathi.screens.EditProfile.EditProfile;
 
 public class Admin extends Fragment implements View.OnClickListener {
 
@@ -95,6 +96,10 @@ public class Admin extends Fragment implements View.OnClickListener {
             intent = new Intent(view.getContext(), CreateNotice.class);
         } else if (view.getId() == R.id.pending_designation) {
             intent = new Intent(view.getContext(), PendingDesignation.class);
+        } else if (view.getId() == R.id.add_member) {
+            intent = new Intent(view.getContext(), EditProfile.class);
+            intent.putExtra("fromHome",true);
+            intent.putExtra("newMember",true);
         } else if (view.getId() == R.id.create_meeting) {
         }
         if (intent == null) return;

@@ -60,6 +60,7 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
 
         Firebase
                 .checkForUpdates(this, file -> {
+                    if(this.isDestroyed())return;
                     Uri uri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file);
                     AlertDialog alertDialog = new AlertDialog.Builder(this).create();
                     alertDialog.setTitle("New Update found");
@@ -75,7 +76,8 @@ public class LandingPage extends AppCompatActivity implements ChipNavigationBar.
                         intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
                         startActivity(intent);
                     });
-
+    
+                    if(this.isDestroyed())return;
                     alertDialog.show();
 
                 });
